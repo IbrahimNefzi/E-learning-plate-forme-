@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPlatform - Authentification</title>
+    <title>EduPlatform - Gestion de contenu</title>
     <style>
         * {
             margin: 0;
@@ -419,6 +419,13 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .course-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .video-placeholder {
@@ -512,6 +519,7 @@
             max-width: 90%;
             max-height: 90%;
             overflow: auto;
+            width: 800px;
         }
 
         .close-btn {
@@ -527,9 +535,16 @@
 
         .video-player {
             width: 100%;
-            max-width: 800px;
             height: 450px;
             background: #000;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .video-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
             border-radius: 10px;
         }
 
@@ -621,6 +636,39 @@
             border-color: #667eea;
         }
 
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        #attachmentsList {
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .attachment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .attachment-item a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .attachment-item a:hover {
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -646,6 +694,15 @@
 
             .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .video-player {
+                height: 300px;
             }
         }
     </style>
@@ -746,37 +803,58 @@
                 <div class="upload-section">
                     <h2 style="margin-bottom: 20px; color: #333;">📤 Gérer le contenu</h2>
                     
-                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                        <div class="upload-icon">📁</div>
-                        <h3>Glissez vos fichiers ici ou cliquez pour sélectionner</h3>
-                        <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
-                        <input type="file" id="fileInput" class="file-input" multiple accept="video/*,.pdf" onchange="handleFileUpload(event)">
+                    <div class="form-group">
+                        <label for="contentType">Type de contenu</label>
+                        <select id="contentType" onchange="toggleUploadFields()">
+                            <option value="youtube">Vidéo YouTube</option>
+                            <option value="file">Fichier local</option>
+                        </select>
                     </div>
 
-                    <div style="margin-top: 30px;">
+                    <div id="youtubeFields">
                         <div class="form-group">
-                            <label for="courseTitle">Titre du cours</label>
-                            <input type="text" id="courseTitle" placeholder="Ex: Introduction à JavaScript">
+                            <label for="youtubeUrl">URL YouTube</label>
+                            <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="courseCategory">Catégorie</label>
-                            <select id="courseCategory">
-                                <option value="programmation">Programmation</option>
-                                <option value="web">Développement Web</option>
-                                <option value="database">Base de données</option>
-                                <option value="algorithmes">Algorithmes</option>
-                                <option value="reseaux">Réseaux</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="courseDescription">Description</label>
-                            <textarea id="courseDescription" rows="3" placeholder="Description du cours..."></textarea>
-                        </div>
-                        
-                        <button class="upload-btn" onclick="addCourse()">Publier le cours</button>
                     </div>
+
+                    <div id="fileFields" style="display:none;">
+                        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">📁</div>
+                            <h3>Glissez vos fichiers ici ou cliquez pour sélectionner</h3>
+                            <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
+                            <input type="file" id="fileInput" class="file-input" accept="video/*,.pdf" onchange="handleFileUpload(event)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attachments">Pièces jointes (PDF, .py, .html, etc.)</label>
+                        <input type="file" id="attachments" class="file-input" multiple onchange="handleAttachments()">
+                        <div id="attachmentsList"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseTitle">Titre du cours</label>
+                        <input type="text" id="courseTitle" placeholder="Ex: Introduction à JavaScript">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseCategory">Catégorie</label>
+                        <select id="courseCategory">
+                            <option value="programmation">Programmation</option>
+                            <option value="web">Développement Web</option>
+                            <option value="database">Base de données</option>
+                            <option value="algorithmes">Algorithmes</option>
+                            <option value="reseaux">Réseaux</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseDescription">Description</label>
+                        <textarea id="courseDescription" rows="3" placeholder="Description du cours..."></textarea>
+                    </div>
+                    
+                    <button class="upload-btn" onclick="addCourse()">Publier le cours</button>
                 </div>
             </div>
 
@@ -816,39 +894,55 @@
         // Variables globales
         let currentUser = null;
         let uploadedFiles = [];
+        let attachments = [];
         let courses = [
             {
                 id: 1,
                 title: "Introduction à JavaScript",
                 category: "programmation",
-                type: "video",
+                type: "youtube",
+                videoId: "PkZNo7MFNFg",
                 description: "Apprenez les bases de JavaScript avec des exemples pratiques",
                 views: 245,
                 duration: "45 min",
                 date: "2024-01-15",
-                author: "Prof. Martin"
+                author: "Prof. Martin",
+                attachments: [
+                    { name: "Exercices.pdf", type: "application/pdf", size: 2500000 },
+                    { name: "Code-exemple.js", type: "application/javascript", size: 15000 }
+                ]
             },
             {
                 id: 2,
                 title: "Guide CSS Flexbox",
                 category: "web",
                 type: "pdf",
+                fileName: "flexbox-guide.pdf",
+                fileSize: 2400000,
                 description: "Manuel complet sur l'utilisation de Flexbox en CSS",
                 views: 189,
                 pages: 24,
                 date: "2024-01-10",
-                author: "Prof. Martin"
+                author: "Prof. Martin",
+                attachments: [
+                    { name: "Exercices-flexbox.html", type: "text/html", size: 35000 }
+                ]
             },
             {
                 id: 3,
                 title: "Algorithmes de tri",
                 category: "algorithmes",
-                type: "video",
+                type: "youtube",
+                videoId: "kgBjXUE_Nwc",
                 description: "Comprendre les différents algorithmes de tri et leur complexité",
                 views: 156,
                 duration: "32 min",
                 date: "2024-01-08",
-                author: "Prof. Martin"
+                author: "Prof. Martin",
+                attachments: [
+                    { name: "Implémentation Python.py", type: "text/x-python", size: 8000 },
+                    { name: "Diapositives.pdf", type: "application/pdf", size: 1800000 }
+                ]
             }
         ];
 
@@ -1032,12 +1126,6 @@
                     navTabs.appendChild(button);
                 }
             });
-            
-            // Afficher la section appropriée
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById('courses').classList.add('active');
         }
 
         // Changer d'onglet
@@ -1074,6 +1162,8 @@
                     loadStatistics();
                 } else if (tabId === 'courses') {
                     renderCourses();
+                } else if (tabId === 'upload') {
+                    resetUploadForm();
                 }
             }
             
@@ -1105,11 +1195,13 @@
                 const card = document.createElement('div');
                 card.className = 'course-card';
                 
-                const isVideo = course.type === 'video';
-                const thumbnailContent = isVideo 
-                    ? `<div class="video-placeholder">▶️</div>
-                       <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
-                    : `<div class="pdf-icon">📄</div>`;
+                const thumbnailContent = course.type === 'youtube' ? 
+                    `<img src="https://img.youtube.com/vi/${course.videoId}/0.jpg" alt="${course.title}">
+                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
+                    course.type === 'video' ? 
+                    `<div class="video-placeholder">▶️</div>
+                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
+                    `<div class="pdf-icon">📄</div>`;
                 
                 card.innerHTML = `
                     <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
@@ -1123,14 +1215,16 @@
                         <div class="course-title">${course.title}</div>
                         <p>${course.description}</p>
                         <div class="course-meta">
-                            <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + (course.pages || '0') + ' pages'}</div>
+                            <div>${course.type === 'youtube' ? '🎬 YouTube' : 
+                                  course.type === 'video' ? '🎬 ' + course.duration : 
+                                  '📄 ' + (course.pages || '0') + ' pages'}</div>
                             <div>👁️ ${course.views} vues</div>
                         </div>
                         <div class="course-category">${getCategoryLabel(course.category)}</div>
                     </div>
                 `;
                 
-                if (!isVideo) {
+                if (course.type === 'pdf') {
                     card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
                 }
                 
@@ -1161,10 +1255,53 @@
             return colors[category] || 'linear-gradient(45deg, #667eea, #764ba2)';
         }
 
+        // Basculer entre les champs YouTube et fichiers locaux
+        function toggleUploadFields() {
+            const contentType = document.getElementById('contentType').value;
+            document.getElementById('youtubeFields').style.display = contentType === 'youtube' ? 'block' : 'none';
+            document.getElementById('fileFields').style.display = contentType === 'file' ? 'block' : 'none';
+            resetUploadForm();
+        }
+
         // Upload de fichiers
         function handleFileUpload(event) {
             uploadedFiles = Array.from(event.target.files);
-            alert(`${uploadedFiles.length} fichier(s) sélectionné(s) !`);
+            const uploadArea = document.querySelector('.upload-area');
+            
+            // Afficher les fichiers sélectionnés
+            let filesHtml = '';
+            uploadedFiles.forEach(file => {
+                filesHtml += `<div class="file-item">
+                    <span>${file.name}</span>
+                    <span>(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                </div>`;
+            });
+            
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <h3>Fichiers sélectionnés :</h3>
+                ${filesHtml}
+                <p style="margin-top: 10px; color: #666;">Cliquez pour modifier la sélection</p>
+            `;
+        }
+
+        // Gérer les pièces jointes
+        function handleAttachments() {
+            const files = Array.from(document.getElementById('attachments').files);
+            attachments = files;
+            
+            const attachmentsList = document.getElementById('attachmentsList');
+            attachmentsList.innerHTML = '';
+            
+            files.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'attachment-item';
+                item.innerHTML = `
+                    <span>${file.name}</span>
+                    <span>(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                `;
+                attachmentsList.appendChild(item);
+            });
         }
 
         // Ajouter un nouveau cours
@@ -1172,38 +1309,95 @@
             const title = document.getElementById('courseTitle').value;
             const category = document.getElementById('courseCategory').value;
             const description = document.getElementById('courseDescription').value;
+            const contentType = document.getElementById('contentType').value;
             
-            if (!title || !uploadedFiles.length) {
-                alert('Veuillez ajouter un titre et au moins un fichier');
+            if (!title) {
+                alert('Veuillez ajouter un titre');
                 return;
             }
-            
+
             const newCourse = {
                 id: courses.length + 1,
                 title,
                 category,
-                type: uploadedFiles[0].type.includes('video') ? 'video' : 'pdf',
                 description,
                 views: 0,
                 author: currentUser.name,
-                date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0],
+                attachments: attachments.map(file => ({
+                    name: file.name,
+                    type: file.type,
+                    size: file.size
+                }))
             };
-            
-            if (newCourse.type === 'video') {
-                newCourse.duration = Math.floor(Math.random() * 60) + ' min';
+
+            if (contentType === 'youtube') {
+                const youtubeUrl = document.getElementById('youtubeUrl').value;
+                if (!youtubeUrl) {
+                    alert('Veuillez entrer une URL YouTube');
+                    return;
+                }
+                
+                // Extraire l'ID de la vidéo YouTube
+                const videoId = extractYouTubeId(youtubeUrl);
+                if (!videoId) {
+                    alert('URL YouTube invalide');
+                    return;
+                }
+                
+                newCourse.type = 'youtube';
+                newCourse.videoId = videoId;
+                newCourse.duration = "N/A";
             } else {
-                newCourse.pages = Math.floor(Math.random() * 50) + 1;
+                if (uploadedFiles.length === 0) {
+                    alert('Veuillez sélectionner un fichier');
+                    return;
+                }
+                
+                const file = uploadedFiles[0];
+                newCourse.type = file.type.includes('video') ? 'video' : 'pdf';
+                newCourse.fileName = file.name;
+                newCourse.fileSize = file.size;
+                
+                if (newCourse.type === 'video') {
+                    newCourse.duration = Math.floor(Math.random() * 60) + ' min';
+                } else {
+                    newCourse.pages = Math.floor(Math.random() * 50) + 1;
+                }
             }
-            
+
             courses.push(newCourse);
             renderCourses();
-            
-            // Réinitialiser le formulaire
+            resetUploadForm();
+            alert('Cours ajouté avec succès !');
+            switchTab('courses');
+        }
+
+        // Extraire l'ID d'une URL YouTube
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Réinitialiser le formulaire d'upload
+        function resetUploadForm() {
             document.getElementById('courseTitle').value = '';
             document.getElementById('courseDescription').value = '';
+            document.getElementById('youtubeUrl').value = '';
+            document.getElementById('attachments').value = '';
+            document.getElementById('attachmentsList').innerHTML = '';
             uploadedFiles = [];
+            attachments = [];
             
-            alert('Cours ajouté avec succès !');
+            const uploadArea = document.querySelector('.upload-area');
+            if (uploadArea) {
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">📁</div>
+                    <h3>Glissez vos fichiers ici ou cliquez pour sélectionner</h3>
+                    <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
+                `;
+            }
         }
 
         // Charger les statistiques
@@ -1245,11 +1439,13 @@
                 const card = document.createElement('div');
                 card.className = 'course-card';
                 
-                const isVideo = course.type === 'video';
-                const thumbnailContent = isVideo 
-                    ? `<div class="video-placeholder">▶️</div>
-                       <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
-                    : `<div class="pdf-icon">📄</div>`;
+                const thumbnailContent = course.type === 'youtube' ? 
+                    `<img src="https://img.youtube.com/vi/${course.videoId}/0.jpg" alt="${course.title}">
+                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
+                    course.type === 'video' ? 
+                    `<div class="video-placeholder">▶️</div>
+                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
+                    `<div class="pdf-icon">📄</div>`;
                 
                 card.innerHTML = `
                     <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
@@ -1263,14 +1459,16 @@
                         <div class="course-title">${course.title}</div>
                         <p>${course.description}</p>
                         <div class="course-meta">
-                            <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + (course.pages || '0') + ' pages'}</div>
+                            <div>${course.type === 'youtube' ? '🎬 YouTube' : 
+                                  course.type === 'video' ? '🎬 ' + course.duration : 
+                                  '📄 ' + (course.pages || '0') + ' pages'}</div>
                             <div>👁️ ${course.views} vues</div>
                         </div>
                         <div class="course-category">${getCategoryLabel(course.category)}</div>
                     </div>
                 `;
                 
-                if (!isVideo) {
+                if (course.type === 'pdf') {
                     card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
                 }
                 
@@ -1283,7 +1481,22 @@
             const course = courses.find(c => c.id === courseId);
             const modalContent = document.getElementById('modalContent');
             
-            if (course.type === 'video') {
+            if (course.type === 'youtube') {
+                modalContent.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
+                    <div class="video-player">
+                        <iframe width="100%" height="100%" 
+                                src="https://www.youtube.com/embed/${course.videoId}?autoplay=1" 
+                                frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <p><strong>Auteur:</strong> ${course.author}</p>
+                        <p><strong>Date:</strong> ${course.date}</p>
+                        <p>${course.description}</p>
+                    </div>
+                    ${renderAttachments(course)}
+                `;
+            } else if (course.type === 'video') {
                 modalContent.innerHTML = `
                     <h2 style="margin-bottom: 20px;">${course.title}</h2>
                     <div class="video-player">
@@ -1296,6 +1509,7 @@
                         <p><strong>Date:</strong> ${course.date}</p>
                         <p>${course.description}</p>
                     </div>
+                    ${renderAttachments(course)}
                 `;
             } else {
                 modalContent.innerHTML = `
@@ -1312,6 +1526,7 @@
                         <p><strong>Date:</strong> ${course.date}</p>
                         <p>${course.description}</p>
                     </div>
+                    ${renderAttachments(course)}
                 `;
             }
             
@@ -1320,6 +1535,28 @@
             
             // Ouvrir la modal
             document.getElementById('courseModal').style.display = 'block';
+        }
+
+        // Afficher les pièces jointes
+        function renderAttachments(course) {
+            if (!course.attachments || course.attachments.length === 0) return '';
+            
+            let html = '<div style="margin-top:20px;"><h3>Pièces jointes :</h3><ul>';
+            course.attachments.forEach(file => {
+                html += `<li class="attachment-item">
+                    <a href="#" onclick="downloadAttachment('${file.name}')">
+                        ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                    </a>
+                </li>`;
+            });
+            html += '</ul></div>';
+            return html;
+        }
+
+        // Fonction de simulation de téléchargement
+        function downloadAttachment(filename) {
+            alert(`Simulation: Téléchargement de ${filename}`);
+            // Dans une vraie application, vous feriez une requête au serveur
         }
 
         // Fermer la modal
