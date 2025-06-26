@@ -311,10 +311,16 @@
 
         .content-section {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .content-section.active {
             display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .upload-section {
@@ -607,6 +613,14 @@
             opacity: 0.5;
         }
 
+        .tab-btn:focus {
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: #667eea;
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -752,7 +766,7 @@
                                 <option value="web">Développement Web</option>
                                 <option value="database">Base de données</option>
                                 <option value="algorithmes">Algorithmes</option>
-                                <option value="sti">STI</option>
+                                <option value="reseaux">Réseaux</option>
                             </select>
                         </div>
                         
@@ -854,6 +868,13 @@
             } else {
                 showAuthInterface();
             }
+
+            // Écouteur pour la touche Entrée dans la recherche
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchCourses();
+                }
+            });
         });
 
         // Basculer entre connexion et inscription
@@ -961,307 +982,381 @@
             document.getElementById('mainApp').classList.remove('active');
         }
 
-    // Afficher l'interface principale
-    function showMainInterface() {
-        document.getElementById('authContainer').style.display = 'none';
-        document.getElementById('mainApp').classList.add('active');
-        
-        // Mettre à jour les informations utilisateur
-        document.getElementById('userName').textContent = currentUser.name;
-        document.getElementById('userRole').textContent = 
-            currentUser.role === 'admin' ? 'Professeur/Admin' : 'Étudiant';
-        
-        // Initiales pour l'avatar
-        const initials = currentUser.name.split(' ').map(n => n[0]).join('');
-        document.getElementById('userAvatar').textContent = initials;
-        
-        // Générer les onglets de navigation selon le rôle
-        generateNavigationTabs();
-        
+        // Afficher l'interface principale
+        function showMainInterface() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            
+            // Mettre à jour les informations utilisateur
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = 
+                currentUser.role === 'admin' ? 'Professeur/Admin' : 'Étudiant';
+            
+            // Initiales pour l'avatar
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('userAvatar').textContent = initials;
+            
+            // Générer les onglets de navigation selon le rôle
+            generateNavigationTabs();
+            
+            // Afficher les cours
+            renderCourses();
+            
+            // Charger les statistiques si admin
+            if (currentUser.role === 'admin') {
+                loadStatistics();
+            }
+
+            // Sauvegarder l'onglet actif
+            localStorage.setItem('activeTab', 'courses');
+        }
+
+        // Générer les onglets de navigation
+        function generateNavigationTabs() {
+            const navTabs = document.getElementById('navTabs');
+            navTabs.innerHTML = '';
+            
+            const tabs = [
+                { id: 'courses', label: '📚 Mes Cours', show: true },
+                { id: 'upload', label: '📤 Upload', show: currentUser.role === 'admin' },
+                { id: 'stats', label: '📊 Statistiques', show: currentUser.role === 'admin' }
+            ];
+            
+            tabs.forEach(tab => {
+                if (tab.show) {
+                    const button = document.createElement('button');
+                    button.className = 'tab-btn';
+                    button.textContent = tab.label;
+                    button.onclick = () => switchTab(tab.id);
+                    if (tab.id === 'courses') button.classList.add('active');
+                    navTabs.appendChild(button);
+                }
+            });
+            
+            // Afficher la section appropriée
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('courses').classList.add('active');
+        }
+
+        // Changer d'onglet
+        function switchTab(tabId) {
+            // Désactiver tous les onglets
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Désactiver toutes les sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Activer l'onglet sélectionné
+            const activeTab = Array.from(document.querySelectorAll('.tab-btn')).find(btn => 
+                btn.textContent.includes(
+                    tabId === 'courses' ? 'Mes Cours' : 
+                    tabId === 'upload' ? 'Upload' : 'Statistiques'
+                )
+            );
+            
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            // Activer la section correspondante
+            const section = document.getElementById(tabId);
+            if (section) {
+                section.classList.add('active');
+                
+                // Recharger les données si nécessaire
+                if (tabId === 'stats') {
+                    loadStatistics();
+                } else if (tabId === 'courses') {
+                    renderCourses();
+                }
+            }
+            
+            // Sauvegarder l'onglet actif
+            localStorage.setItem('activeTab', tabId);
+            
+            // Empêcher le comportement par défaut
+            return false;
+        }
+
         // Afficher les cours
-        renderCourses();
-        
-        // Charger les statistiques si admin
-        if (currentUser.role === 'admin') {
-            loadStatistics();
-        }
-    }
-
-    // Générer les onglets de navigation
-    function generateNavigationTabs() {
-        const navTabs = document.getElementById('navTabs');
-        navTabs.innerHTML = '';
-        
-        const tabs = [
-            { id: 'courses', label: '📚 Cours', show: true },
-            { id: 'upload', label: '📤 Upload', show: currentUser.role === 'admin' },
-            { id: 'stats', label: '📊 Statistiques', show: currentUser.role === 'admin' }
-        ];
-        
-        tabs.forEach(tab => {
-            if (tab.show) {
-                const button = document.createElement('button');
-                button.className = 'tab-btn';
-                button.textContent = tab.label;
-                button.onclick = () => switchTab(tab.id);
-                navTabs.appendChild(button);
-            }
-        });
-        
-        // Activer le premier onglet par défaut
-        if (navTabs.firstChild) {
-            navTabs.firstChild.classList.add('active');
-        }
-    }
-
-    // Changer d'onglet
-    function switchTab(tabId) {
-        // Désactiver tous les onglets
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-        
-        // Activer l'onglet sélectionné
-        document.querySelector(`.tab-btn:contains('${tabId === 'courses' ? '📚 Cours' : tabId === 'upload' ? '📤 Upload' : '📊 Statistiques'}')`).classList.add('active');
-        document.getElementById(tabId).classList.add('active');
-        
-        // Recharger les données si nécessaire
-        if (tabId === 'stats' && currentUser.role === 'admin') {
-            loadStatistics();
-        }
-    }
-
-    // Afficher les cours
-    function renderCourses() {
-        const courseGrid = document.getElementById('courseGrid');
-        
-        if (courses.length === 0) {
-            courseGrid.innerHTML = `
-                <div class="no-courses">
-                    <div class="no-courses-icon">📭</div>
-                    <h3>Aucun cours disponible</h3>
-                    <p>Commencez par ajouter du contenu si vous êtes administrateur</p>
-                </div>
-            `;
-            return;
-        }
-        
-        courseGrid.innerHTML = '';
-        
-        courses.forEach(course => {
-            const card = document.createElement('div');
-            card.className = 'course-card';
+        function renderCourses() {
+            const courseGrid = document.getElementById('courseGrid');
             
-            const isVideo = course.type === 'video';
-            const thumbnailContent = isVideo 
-                ? `<div class="video-placeholder">▶️</div>
-                   <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
-                : `<div class="pdf-icon">📄</div>`;
-            
-            card.innerHTML = `
-                <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
-                    ${thumbnailContent}
-                    ${currentUser.role === 'admin' ? `
-                    <div class="course-actions">
-                        <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
-                    </div>` : ''}
-                </div>
-                <div class="course-info">
-                    <div class="course-title">${course.title}</div>
-                    <p>${course.description}</p>
-                    <div class="course-meta">
-                        <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + course.pages + ' pages'}</div>
-                        <div>👁️ ${course.views} vues</div>
+            if (courses.length === 0) {
+                courseGrid.innerHTML = `
+                    <div class="no-courses">
+                        <div class="no-courses-icon">📭</div>
+                        <h3>Aucun cours disponible</h3>
+                        <p>Commencez par ajouter du contenu si vous êtes administrateur</p>
                     </div>
-                    <div class="course-category">${getCategoryLabel(course.category)}</div>
-                </div>
-            `;
-            
-            if (!isVideo) {
-                card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
+                `;
+                return;
             }
             
-            courseGrid.appendChild(card);
-        });
-    }
-
-    // Gestion des catégories
-    function getCategoryLabel(category) {
-        const categories = {
-            programmation: 'Programmation',
-            web: 'Développement Web',
-            database: 'Base de données',
-            algorithmes: 'Algorithmes',
-            reseaux: 'Réseaux'
-        };
-        return categories[category] || category;
-    }
-
-    function getCategoryColor(category) {
-        const colors = {
-            programmation: 'linear-gradient(45deg, #667eea, #764ba2)',
-            web: 'linear-gradient(45deg, #43e97b, #38f9d7)',
-            database: 'linear-gradient(45deg, #fa709a, #fee140)',
-            algorithmes: 'linear-gradient(45deg, #4facfe, #00f2fe)',
-            reseaux: 'linear-gradient(45deg, #a6c0fe, #f68084)'
-        };
-        return colors[category] || 'linear-gradient(45deg, #667eea, #764ba2)';
-    }
-
-    // Upload de fichiers
-    function handleFileUpload(event) {
-        uploadedFiles = Array.from(event.target.files);
-        alert(`${uploadedFiles.length} fichier(s) sélectionné(s) !`);
-    }
-
-    // Ajouter un nouveau cours
-    function addCourse() {
-        const title = document.getElementById('courseTitle').value;
-        const category = document.getElementById('courseCategory').value;
-        const description = document.getElementById('courseDescription').value;
-        
-        if (!title || !uploadedFiles.length) {
-            alert('Veuillez ajouter un titre et au moins un fichier');
-            return;
-        }
-        
-        const newCourse = {
-            id: courses.length + 1,
-            title,
-            category,
-            type: uploadedFiles[0].type.includes('video') ? 'video' : 'pdf',
-            description,
-            views: 0,
-            author: currentUser.name,
-            date: new Date().toISOString().split('T')[0]
-        };
-        
-        if (newCourse.type === 'video') {
-            newCourse.duration = Math.floor(Math.random() * 60) + ' min';
-        } else {
-            newCourse.pages = Math.floor(Math.random() * 50) + 1;
-        }
-        
-        courses.push(newCourse);
-        renderCourses();
-        
-        // Réinitialiser le formulaire
-        document.getElementById('courseTitle').value = '';
-        document.getElementById('courseDescription').value = '';
-        uploadedFiles = [];
-        
-        alert('Cours ajouté avec succès !');
-    }
-
-    // Charger les statistiques
-    function loadStatistics() {
-        document.getElementById('totalCourses').textContent = courses.length;
-        document.getElementById('totalViews').textContent = courses.reduce((sum, course) => sum + course.views, 0);
-        document.getElementById('totalStudents').textContent = users.filter(u => u.role === 'student').length;
-    }
-
-    // Ouvrir un cours
-    function openCourseModal(courseId) {
-        const course = courses.find(c => c.id === courseId);
-        const modalContent = document.getElementById('modalContent');
-        
-        if (course.type === 'video') {
-            modalContent.innerHTML = `
-                <h2 style="margin-bottom: 20px;">${course.title}</h2>
-                <div class="video-player">
-                    <div style="display:flex;justify-content:center;align-items:center;height:100%;color:white;">
-                        Lecture de la vidéo (simulation)
+            courseGrid.innerHTML = '';
+            
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                
+                const isVideo = course.type === 'video';
+                const thumbnailContent = isVideo 
+                    ? `<div class="video-placeholder">▶️</div>
+                       <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
+                    : `<div class="pdf-icon">📄</div>`;
+                
+                card.innerHTML = `
+                    <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
+                        ${thumbnailContent}
+                        ${currentUser.role === 'admin' ? `
+                        <div class="course-actions">
+                            <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
+                        </div>` : ''}
                     </div>
-                </div>
-                <div style="margin-top:20px;">
-                    <p><strong>Auteur:</strong> ${course.author}</p>
-                    <p><strong>Date:</strong> ${course.date}</p>
-                    <p>${course.description}</p>
-                </div>
-            `;
-        } else {
-            modalContent.innerHTML = `
-                <h2 style="margin-bottom: 20px;">${course.title}</h2>
-                <div style="height: 500px; background: #f0f0f0; display: flex; justify-content: center; align-items: center;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 6rem;">📄</div>
-                        <p>Prévisualisation du document PDF</p>
-                        <button class="auth-btn" style="margin-top:20px;">Télécharger le PDF</button>
+                    <div class="course-info">
+                        <div class="course-title">${course.title}</div>
+                        <p>${course.description}</p>
+                        <div class="course-meta">
+                            <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + (course.pages || '0') + ' pages'}</div>
+                            <div>👁️ ${course.views} vues</div>
+                        </div>
+                        <div class="course-category">${getCategoryLabel(course.category)}</div>
                     </div>
-                </div>
-                <div style="margin-top:20px;">
-                    <p><strong>Pages:</strong> ${course.pages}</p>
-                    <p><strong>Date:</strong> ${course.date}</p>
-                    <p>${course.description}</p>
-                </div>
-            `;
+                `;
+                
+                if (!isVideo) {
+                    card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
+                }
+                
+                courseGrid.appendChild(card);
+            });
         }
-        
-        // Augmenter le compteur de vues
-        course.views += 1;
-        
-        // Ouvrir la modal
-        document.getElementById('courseModal').style.display = 'block';
-    }
 
-    // Fermer la modal
-    function closeModal() {
-        document.getElementById('courseModal').style.display = 'none';
-    }
+        // Gestion des catégories
+        function getCategoryLabel(category) {
+            const categories = {
+                programmation: 'Programmation',
+                web: 'Développement Web',
+                database: 'Base de données',
+                algorithmes: 'Algorithmes',
+                reseaux: 'Réseaux'
+            };
+            return categories[category] || category;
+        }
 
-    // Supprimer un cours
-    function deleteCourse(courseId) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
-            courses = courses.filter(c => c.id !== courseId);
+        function getCategoryColor(category) {
+            const colors = {
+                programmation: 'linear-gradient(45deg, #667eea, #764ba2)',
+                web: 'linear-gradient(45deg, #43e97b, #38f9d7)',
+                database: 'linear-gradient(45deg, #fa709a, #fee140)',
+                algorithmes: 'linear-gradient(45deg, #4facfe, #00f2fe)',
+                reseaux: 'linear-gradient(45deg, #a6c0fe, #f68084)'
+            };
+            return colors[category] || 'linear-gradient(45deg, #667eea, #764ba2)';
+        }
+
+        // Upload de fichiers
+        function handleFileUpload(event) {
+            uploadedFiles = Array.from(event.target.files);
+            alert(`${uploadedFiles.length} fichier(s) sélectionné(s) !`);
+        }
+
+        // Ajouter un nouveau cours
+        function addCourse() {
+            const title = document.getElementById('courseTitle').value;
+            const category = document.getElementById('courseCategory').value;
+            const description = document.getElementById('courseDescription').value;
+            
+            if (!title || !uploadedFiles.length) {
+                alert('Veuillez ajouter un titre et au moins un fichier');
+                return;
+            }
+            
+            const newCourse = {
+                id: courses.length + 1,
+                title,
+                category,
+                type: uploadedFiles[0].type.includes('video') ? 'video' : 'pdf',
+                description,
+                views: 0,
+                author: currentUser.name,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            if (newCourse.type === 'video') {
+                newCourse.duration = Math.floor(Math.random() * 60) + ' min';
+            } else {
+                newCourse.pages = Math.floor(Math.random() * 50) + 1;
+            }
+            
+            courses.push(newCourse);
             renderCourses();
-            loadStatistics();
+            
+            // Réinitialiser le formulaire
+            document.getElementById('courseTitle').value = '';
+            document.getElementById('courseDescription').value = '';
+            uploadedFiles = [];
+            
+            alert('Cours ajouté avec succès !');
         }
-    }
 
-    // Recherche de cours
-    function searchCourses() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        
-        if (!searchTerm) {
-            renderCourses();
-            return;
+        // Charger les statistiques
+        function loadStatistics() {
+            document.getElementById('totalCourses').textContent = courses.length;
+            document.getElementById('totalViews').textContent = courses.reduce((sum, course) => sum + course.views, 0);
+            document.getElementById('totalStudents').textContent = users.filter(u => u.role === 'student').length;
         }
-        
-        const filteredCourses = courses.filter(course => 
-            course.title.toLowerCase().includes(searchTerm) || 
-            course.description.toLowerCase().includes(searchTerm)
-        );
-        
-        const courseGrid = document.getElementById('courseGrid');
-        courseGrid.innerHTML = '';
-        
-        if (filteredCourses.length === 0) {
-            courseGrid.innerHTML = `
-                <div class="no-courses">
-                    <div class="no-courses-icon">🔍</div>
-                    <h3>Aucun résultat trouvé</h3>
-                    <p>Essayez avec d'autres termes de recherche</p>
-                </div>
-            `;
-            return;
+
+        // Recherche de cours
+        function searchCourses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const courseGrid = document.getElementById('courseGrid');
+            
+            if (!searchTerm) {
+                renderCourses();
+                return;
+            }
+            
+            const filteredCourses = courses.filter(course => 
+                course.title.toLowerCase().includes(searchTerm) || 
+                course.description.toLowerCase().includes(searchTerm) ||
+                course.category.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredCourses.length === 0) {
+                courseGrid.innerHTML = `
+                    <div class="no-courses">
+                        <div class="no-courses-icon">🔍</div>
+                        <h3>Aucun résultat trouvé</h3>
+                        <p>Essayez avec d'autres termes de recherche</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            courseGrid.innerHTML = '';
+            filteredCourses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                
+                const isVideo = course.type === 'video';
+                const thumbnailContent = isVideo 
+                    ? `<div class="video-placeholder">▶️</div>
+                       <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
+                    : `<div class="pdf-icon">📄</div>`;
+                
+                card.innerHTML = `
+                    <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
+                        ${thumbnailContent}
+                        ${currentUser.role === 'admin' ? `
+                        <div class="course-actions">
+                            <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
+                        </div>` : ''}
+                    </div>
+                    <div class="course-info">
+                        <div class="course-title">${course.title}</div>
+                        <p>${course.description}</p>
+                        <div class="course-meta">
+                            <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + (course.pages || '0') + ' pages'}</div>
+                            <div>👁️ ${course.views} vues</div>
+                        </div>
+                        <div class="course-category">${getCategoryLabel(course.category)}</div>
+                    </div>
+                `;
+                
+                if (!isVideo) {
+                    card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
+                }
+                
+                courseGrid.appendChild(card);
+            });
         }
-        
-        // Afficher les résultats
-        filteredCourses.forEach(course => {
-            // ... (même code que dans renderCourses mais pour un seul cours)
-            // Pour des raisons de concision, on duplique le code de création de carte
-            // Dans une vraie application, on créerait une fonction dédiée
+
+        // Ouvrir un cours
+        function openCourseModal(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            const modalContent = document.getElementById('modalContent');
+            
+            if (course.type === 'video') {
+                modalContent.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
+                    <div class="video-player">
+                        <div style="display:flex;justify-content:center;align-items:center;height:100%;color:white;">
+                            Lecture de la vidéo (simulation)
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <p><strong>Auteur:</strong> ${course.author}</p>
+                        <p><strong>Date:</strong> ${course.date}</p>
+                        <p>${course.description}</p>
+                    </div>
+                `;
+            } else {
+                modalContent.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
+                    <div style="height: 500px; background: #f0f0f0; display: flex; justify-content: center; align-items: center;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 6rem;">📄</div>
+                            <p>Prévisualisation du document PDF</p>
+                            <button class="auth-btn" style="margin-top:20px;">Télécharger le PDF</button>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <p><strong>Pages:</strong> ${course.pages || '0'}</p>
+                        <p><strong>Date:</strong> ${course.date}</p>
+                        <p>${course.description}</p>
+                    </div>
+                `;
+            }
+            
+            // Augmenter le compteur de vues
+            course.views += 1;
+            
+            // Ouvrir la modal
+            document.getElementById('courseModal').style.display = 'block';
+        }
+
+        // Fermer la modal
+        function closeModal() {
+            document.getElementById('courseModal').style.display = 'none';
+        }
+
+        // Supprimer un cours
+        function deleteCourse(courseId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
+                courses = courses.filter(c => c.id !== courseId);
+                renderCourses();
+                loadStatistics();
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('activeTab');
+            currentUser = null;
+            showAuthInterface();
+        }
+
+        // Gérer le bouton retour
+        window.addEventListener('popstate', function(event) {
+            if (currentUser) {
+                // Restaurer l'onglet actif depuis l'historique
+                const activeTab = localStorage.getItem('activeTab') || 'courses';
+                switchTab(activeTab);
+            }
         });
-    }
 
-    // Déconnexion
-    function logout() {
-        localStorage.removeItem('currentUser');
-        currentUser = null;
-        showAuthInterface();
-    }
-
-    // Helper pour la sélection CSS :contains
-    HTMLElement.prototype.contains = function(text) {
-        return this.textContent.includes(text);
-    };
-</script>
+        // Helper pour la sélection CSS :contains
+        HTMLElement.prototype.contains = function(text) {
+            return this.textContent.includes(text);
+        };
+    </script>
+</body>
+</html>
