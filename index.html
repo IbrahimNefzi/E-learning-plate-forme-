@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPlatform - Gestion de contenu</title>
+    <title>EduPlatform - Authentification Firebase</title>
+    <!-- Ajouter Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -891,6 +894,20 @@
     </div>
 
     <script>
+        // Configuration Firebase - Remplacez par votre configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtneirAz5uf9I_G5C9_iY2WSCfbD5b0vc",
+            authDomain: "it-bridge-ca82b.firebaseapp.com",
+            projectId: "it-bridge-ca82b",
+            storageBucket: "it-bridge-ca82b.firebasestorage.app",
+            messagingSenderId: "264260582161",
+            appId: "1:264260582161:web:4808e9146b3e1c7c4c6ab0"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
         // Variables globales
         let currentUser = null;
         let uploadedFiles = [];
@@ -946,27 +963,30 @@
             }
         ];
 
-        // Simulation de base de données utilisateurs
-        let users = [
-            { email: "admin@edu.com", password: "admin123", name: "Admin", role: "admin" },
-            { email: "student@edu.com", password: "student123", name: "Étudiant", role: "student" }
-        ];
-
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier si un utilisateur est connecté
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showMainInterface();
-            } else {
-                showAuthInterface();
-            }
-
             // Écouteur pour la touche Entrée dans la recherche
             document.getElementById('searchInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     searchCourses();
+                }
+            });
+
+            // Observer l'état d'authentification
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // Utilisateur connecté
+                    currentUser = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0],
+                        role: localStorage.getItem(`role_${user.uid}`) || 'student'
+                    };
+                    showMainInterface();
+                } else {
+                    // Utilisateur non connecté
+                    currentUser = null;
+                    showAuthInterface();
                 }
             });
         });
@@ -992,7 +1012,7 @@
             document.getElementById('authAlert').innerHTML = '';
         }
 
-        // Connexion
+        // Connexion avec Firebase
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -1002,29 +1022,17 @@
             loginBtn.disabled = true;
             loginBtn.textContent = 'Connexion...';
 
-            // Simuler une requête réseau
-            setTimeout(() => {
-                const user = users.find(u => u.email === email && u.password === password);
-                
-                if (user) {
-                    currentUser = {
-                        email: user.email,
-                        name: user.name,
-                        role: user.role
-                    };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showAuthAlert('Connexion réussie !', 'success');
-                    setTimeout(() => showMainInterface(), 1000);
-                } else {
-                    showAuthAlert('Email ou mot de passe incorrect');
-                }
-
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // La connexion réussie est gérée par onAuthStateChanged
+            } catch (error) {
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Se connecter';
-            }, 1000);
+                showAuthAlert(getFirebaseErrorMessage(error));
+            }
         });
 
-        // Inscription
+        // Inscription avec Firebase
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('registerName').value;
@@ -1036,37 +1044,62 @@
             registerBtn.disabled = true;
             registerBtn.textContent = 'Création...';
 
-            // Simuler une requête réseau
-            setTimeout(() => {
-                // Vérifier si l'email existe déjà
-                if (users.find(u => u.email === email)) {
-                    showAuthAlert('Cet email est déjà utilisé');
-                } else {
-                    // Ajouter le nouvel utilisateur
-                    users.push({ email, password, name, role });
-                    showAuthAlert('Compte créé avec succès !', 'success');
-                    
-                    // Basculer vers l'onglet connexion
-                    setTimeout(() => {
-                        switchAuthTab('login');
-                        document.getElementById('loginEmail').value = email;
-                    }, 1500);
-                }
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // Mettre à jour le profil utilisateur
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
 
+                // Stocker le rôle dans localStorage
+                localStorage.setItem(`role_${userCredential.user.uid}`, role);
+
+                // Afficher un message de succès
+                showAuthAlert('Compte créé avec succès !', 'success');
+                
+                // Basculer vers l'onglet connexion
+                setTimeout(() => {
+                    switchAuthTab('login');
+                    document.getElementById('loginEmail').value = email;
+                }, 1500);
+            } catch (error) {
+                showAuthAlert(getFirebaseErrorMessage(error));
+            } finally {
                 registerBtn.disabled = false;
                 registerBtn.textContent = 'Créer un compte';
-            }, 1000);
+            }
         });
 
         // Réinitialiser le mot de passe
         function resetPassword() {
             const email = prompt('Entrez votre adresse email:');
             if (email) {
-                if (users.find(u => u.email === email)) {
-                    showAuthAlert('Email de réinitialisation envoyé !', 'success');
-                } else {
-                    showAuthAlert('Aucun compte trouvé avec cet email');
-                }
+                auth.sendPasswordResetEmail(email)
+                    .then(() => {
+                        showAuthAlert('Email de réinitialisation envoyé !', 'success');
+                    })
+                    .catch(error => {
+                        showAuthAlert(getFirebaseErrorMessage(error));
+                    });
+            }
+        }
+
+        // Traduire les erreurs Firebase
+        function getFirebaseErrorMessage(error) {
+            switch(error.code) {
+                case 'auth/email-already-in-use':
+                    return 'Cet email est déjà utilisé';
+                case 'auth/invalid-email':
+                    return 'Email invalide';
+                case 'auth/weak-password':
+                    return 'Le mot de passe doit contenir au moins 6 caractères';
+                case 'auth/user-not-found':
+                    return 'Aucun compte trouvé avec cet email';
+                case 'auth/wrong-password':
+                    return 'Mot de passe incorrect';
+                default:
+                    return 'Une erreur est survenue. Veuillez réessayer.';
             }
         }
 
@@ -1087,7 +1120,7 @@
                 currentUser.role === 'admin' ? 'Professeur/Admin' : 'Étudiant';
             
             // Initiales pour l'avatar
-            const initials = currentUser.name.split(' ').map(n => n[0]).join('');
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2);
             document.getElementById('userAvatar').textContent = initials;
             
             // Générer les onglets de navigation selon le rôle
@@ -1575,10 +1608,13 @@
 
         // Déconnexion
         function logout() {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('activeTab');
-            currentUser = null;
-            showAuthInterface();
+            auth.signOut().then(() => {
+                localStorage.removeItem('activeTab');
+                currentUser = null;
+                showAuthInterface();
+            }).catch(error => {
+                alert('Erreur lors de la déconnexion: ' + error.message);
+            });
         }
 
         // Gérer le bouton retour
