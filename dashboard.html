@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme de Cours - Prof Informatique</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .search-bar button {
+            background: #667eea;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #5a67d8;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .upload-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-placeholder {
+            color: white;
+            font-size: 3rem;
+            opacity: 0.8;
+        }
+
+        .play-btn {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .course-info {
+            padding: 20px;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .course-category {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .course-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+        }
+
+        .course-card:hover .course-actions {
+            display: block;
+        }
+
+        .pdf-icon {
+            color: #e53e3e;
+            font-size: 2rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .video-player {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            background: #000;
+            border-radius: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .no-courses-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .search-bar {
+                min-width: 100%;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <div style="font-size: 2rem;">📚</div>
+                    <h1>IT BRIDGE</h1>
+                </div>
+                
+                <div class="search-bar" id="studentSearchBar">
+                    <input type="text" placeholder="Rechercher un cours..." id="searchInput">
+                    <button onclick="searchCourses()">🔍</button>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role" id="userRole"></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav-tabs" id="navTabs">
+            <!-- Les onglets seront générés dynamiquement selon le rôle -->
+        </div>
+
+        <!-- Section Cours (pour étudiants et admins) -->
+        <div id="courses" class="content-section">
+            <div class="course-grid" id="courseGrid">
+                <!-- Les cours seront générés dynamiquement -->
+            </div>
+        </div>
+
+        <!-- Section Upload (pour admins seulement) -->
+        <div id="upload" class="content-section">
+            <div class="upload-section">
+                <h2 style="margin-bottom: 20px; color: #333;">📤 Gérer le contenu</h2>
+                
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📁</div>
+                    <h3>Glissez vos fichiers ici ou cliquez pour sélectionner</h3>
+                    <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
+                    <input type="file" id="fileInput" class="file-input" multiple accept="video/*,.pdf" onchange="handleFileUpload(event)">
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <div class="form-group">
+                        <label for="courseTitle">Titre du cours</label>
+                        <input type="text" id="courseTitle" placeholder="Ex: Introduction à JavaScript">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseCategory">Catégorie</label>
+                        <select id="courseCategory">
+                            <option value="programmation">Programmation</option>
+                            <option value="web">Développement Web</option>
+                            <option value="database">Base de données</option>
+                            <option value="algorithmes">Algorithmes</option>
+                            <option value="reseaux">Réseaux</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseDescription">Description</label>
+                        <textarea id="courseDescription" rows="3" placeholder="Description du cours..."></textarea>
+                    </div>
+                    
+                    <button class="upload-btn" onclick="addCourse()">Publier le cours</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Statistiques (pour admins seulement) -->
+        <div id="stats" class="content-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCourses">0</div>
+                    <div class="stat-label">Cours publiés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalViews">0</div>
+                    <div class="stat-label">Vues totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStudents">0</div>
+                    <div class="stat-label">Étudiants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgRating">4.8</div>
+                    <div class="stat-label">Note moyenne</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour visualiser les cours -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let uploadedFiles = [];
+        let courses = [
+            {
+                id: 1,
+                title: "Introduction à JavaScript",
+                category: "programmation",
+                type: "video",
+                description: "Apprenez les bases de JavaScript avec des exemples pratiques",
+                views: 245,
+                duration: "45 min",
+                date: "2024-01-15",
+                author: "Prof. Martin"
+            },
+            {
+                id: 2,
+                title: "Guide CSS Flexbox",
+                category: "web",
+                type: "pdf",
+                description: "Manuel complet sur l'utilisation de Flexbox en CSS",
+                views: 189,
+                pages: 24,
+                date: "2024-01-10",
+                author: "Prof. Martin"
+            },
+            {
+                id: 3,
+                title: "Algorithmes de tri",
+                category: "algorithmes",
+                type: "video",
+                description: "Comprendre les différents algorithmes de tri et leur complexité",
+                views: 156,
+                duration: "32 min",
+                date: "2024-01-08",
+                author: "Prof. Martin"
+            }
+        ];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupérer l'utilisateur connecté depuis le localStorage
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                initializeDashboard();
+            } else {
+                // Rediriger vers la page de connexion si aucun utilisateur n'est connecté
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Initialiser le tableau de bord
+        function initializeDashboard() {
+            // Mettre à jour les informations utilisateur
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = 
+                currentUser.role === 'admin' ? 'Professeur/Admin' : 'Étudiant';
+            
+            // Initiales pour l'avatar
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('userAvatar').textContent = initials;
+            
+            // Générer les onglets de navigation selon le rôle
+            generateNavigationTabs();
+            
+            // Afficher les cours
+            renderCourses();
+        }
+
+        // Générer les onglets de navigation
+        function generateNavigationTabs() {
+            const navTabs = document.getElementById('navTabs');
+            navTabs.innerHTML = '';
+            
+            // Onglets de base pour tous les utilisateurs
+            const tabs = [
+                { id: 'courses', label: '📚 Cours', show: true },
+                { id: 'upload', label: '📤 Upload', show: currentUser.role === 'admin' },
+                { id: 'stats', label: '📊 Statistiques', show: currentUser.role === 'admin' }
+            ];
+            
+            // Créer les boutons d'onglets
+            tabs.forEach(tab => {
+                if (tab.show) {
+                    const button = document.createElement('button');
+                    button.className = 'tab-btn';
+                    button.textContent = tab.label;
+                    button.onclick = () => switchTab(tab.id);
+                    navTabs.appendChild(button);
+                }
+            });
+            
+            // Activer le premier onglet et masquer les autres sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            if (navTabs.firstChild) {
+                navTabs.firstChild.classList.add('active');
+                document.getElementById(navTabs.firstChild.getAttribute('data-target')).classList.add('active');
+            }
+        }
+
+        // Changer d'onglet
+        function switchTab(tabId) {
+            // Désactiver tous les onglets et sections
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            
+            // Activer l'onglet sélectionné
+            const activeTab = Array.from(document.querySelectorAll('.tab-btn')).find(btn => 
+                btn.textContent.includes(tabId === 'courses' ? '📚 Cours' : 
+                                       tabId === 'upload' ? '📤 Upload' : '📊 Statistiques'));
+            
+            if (activeTab) {
+                activeTab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            }
+            
+            // Recharger les données si nécessaire
+            if (tabId === 'stats' && currentUser.role === 'admin') {
+                loadStatistics();
+            }
+        }
+
+        // Afficher les cours
+        function renderCourses() {
+            const courseGrid = document.getElementById('courseGrid');
+            
+            if (courses.length === 0) {
+                courseGrid.innerHTML = `
+                    <div class="no-courses">
+                        <div class="no-courses-icon">📭</div>
+                        <h3>Aucun cours disponible</h3>
+                        <p>Commencez par ajouter du contenu si vous êtes administrateur</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            courseGrid.innerHTML = '';
+            
+            courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                
+                const isVideo = course.type === 'video';
+                const thumbnailContent = isVideo 
+                    ? `<div class="video-placeholder">▶️</div>
+                       <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
+                    : `<div class="pdf-icon">📄</div>`;
+                
+                card.innerHTML = `
+                    <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
+                        ${thumbnailContent}
+                        ${currentUser.role === 'admin' ? `
+                        <div class="course-actions">
+                            <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
+                        </div>` : ''}
+                    </div>
+                    <div class="course-info">
+                        <div class="course-title">${course.title}</div>
+                        <p>${course.description}</p>
+                        <div class="course-meta">
+                            <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + course.pages + ' pages'}</div>
+                            <div>👁️ ${course.views} vues</div>
+                        </div>
+                        <div class="course-category">${getCategoryLabel(course.category)}</div>
+                    </div>
+                `;
+                
+                if (!isVideo) {
+                    card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
+                }
+                
+                courseGrid.appendChild(card);
+            });
+        }
+
+        // Gestion des catégories
+        function getCategoryLabel(category) {
+            const categories = {
+                programmation: 'Programmation',
+                web: 'Développement Web',
+                database: 'Base de données',
+                algorithmes: 'Algorithmes',
+                reseaux: 'Réseaux'
+            };
+            return categories[category] || category;
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                programmation: 'linear-gradient(45deg, #667eea, #764ba2)',
+                web: 'linear-gradient(45deg, #43e97b, #38f9d7)',
+                database: 'linear-gradient(45deg, #fa709a, #fee140)',
+                algorithmes: 'linear-gradient(45deg, #4facfe, #00f2fe)',
+                reseaux: 'linear-gradient(45deg, #a6c0fe, #f68084)'
+            };
+            return colors[category] || 'linear-gradient(45deg, #667eea, #764ba2)';
+        }
+
+        // Upload de fichiers
+        function handleFileUpload(event) {
+            uploadedFiles = Array.from(event.target.files);
+            alert(`${uploadedFiles.length} fichier(s) sélectionné(s) !`);
+        }
+
+        // Ajouter un nouveau cours
+        function addCourse() {
+            const title = document.getElementById('courseTitle').value;
+            const category = document.getElementById('courseCategory').value;
+            const description = document.getElementById('courseDescription').value;
+            
+            if (!title || !uploadedFiles.length) {
+                alert('Veuillez ajouter un titre et au moins un fichier');
+                return;
+            }
+            
+            const newCourse = {
+                id: courses.length + 1,
+                title,
+                category,
+                type: uploadedFiles[0].type.includes('video') ? 'video' : 'pdf',
+                description,
+                views: 0,
+                author: currentUser.name,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            if (newCourse.type === 'video') {
+                newCourse.duration = Math.floor(Math.random() * 60) + ' min';
+            } else {
+                newCourse.pages = Math.floor(Math.random() * 50) + 1;
+            }
+            
+            courses.push(newCourse);
+            renderCourses();
+            
+            // Réinitialiser le formulaire
+            document.getElementById('courseTitle').value = '';
+            document.getElementById('courseDescription').value = '';
+            uploadedFiles = [];
+            
+            alert('Cours ajouté avec succès !');
+            switchTab('courses');
+        }
+
+        // Charger les statistiques
+        function loadStatistics() {
+            document.getElementById('totalCourses').textContent = courses.length;
+            document.getElementById('totalViews').textContent = courses.reduce((sum, course) => sum + course.views, 0);
+            document.getElementById('totalStudents').textContent = Math.floor(Math.random() * 100) + 50;
+        }
+
+        // Ouvrir un cours
+        function openCourseModal(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            const modalContent = document.getElementById('modalContent');
+            
+            if (course.type === 'video') {
+                modalContent.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
+                    <div class="video-player">
+                        <div style="display:flex;justify-content:center;align-items:center;height:100%;color:white;">
+                            Lecture de la vidéo (simulation)
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <p><strong>Auteur:</strong> ${course.author}</p>
+                        <p><strong>Date:</strong> ${course.date}</p>
+                        <p>${course.description}</p>
+                    </div>
+                `;
+            } else {
+                modalContent.innerHTML = `
+                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
+                    <div style="height: 500px; background: #f0f0f0; display: flex; justify-content: center; align-items: center;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 6rem;">📄</div>
+                            <p>Prévisualisation du document PDF</p>
+                            <button class="auth-btn" style="margin-top:20px;">Télécharger le PDF</button>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <p><strong>Pages:</strong> ${course.pages}</p>
+                        <p><strong>Date:</strong> ${course.date}</p>
+                        <p>${course.description}</p>
+                    </div>
+                `;
+            }
+            
+            // Augmenter le compteur de vues
+            course.views += 1;
+            renderCourses();
+            
+            // Ouvrir la modal
+            document.getElementById('courseModal').style.display = 'block';
+        }
+
+        // Fermer la modal
+        function closeModal() {
+            document.getElementById('courseModal').style.display = 'none';
+        }
+
+        // Supprimer un cours
+        function deleteCourse(courseId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
+                courses = courses.filter(c => c.id !== courseId);
+                renderCourses();
+                loadStatistics();
+            }
+        }
+
+        // Recherche de cours
+        function searchCourses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                renderCourses();
+                return;
+            }
+            
+            const filteredCourses = courses.filter(course => 
+                course.title.toLowerCase().includes(searchTerm) || 
+                course.description.toLowerCase().includes(searchTerm) ||
+                course.category.toLowerCase().includes(searchTerm)
+            );
+            
+            const courseGrid = document.getElementById('courseGrid');
+            courseGrid.innerHTML = '';
+            
+            if (filteredCourses.length === 0) {
+                courseGrid.innerHTML = `
+                    <div class="no-courses">
+                        <div class="no-courses-icon">🔍</div>
+                        <h3>Aucun résultat trouvé</h3>
+                        <p>Essayez avec d'autres termes de recherche</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Afficher les résultats filtrés
+            filteredCourses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                
+                const isVideo = course.type === 'video';
+                const thumbnailContent = isVideo 
+                    ? `<div class="video-placeholder">▶️</div>
+                       <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`
+                    : `<div class="pdf-icon">📄</div>`;
+                
+                card.innerHTML = `
+                    <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
+                        ${thumbnailContent}
+                        ${currentUser.role === 'admin' ? `
+                        <div class="course-actions">
+                            <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
+                        </div>` : ''}
+                    </div>
+                    <div class="course-info">
+                        <div class="course-title">${course.title}</div>
+                        <p>${course.description}</p>
+                        <div class="course-meta">
+                            <div>${isVideo ? '🎬 ' + course.duration : '📄 ' + course.pages + ' pages'}</div>
+                            <div>👁️ ${course.views} vues</div>
+                        </div>
+                        <div class="course-category">${getCategoryLabel(course.category)}</div>
+                    </div>
+                `;
+                
+                if (!isVideo) {
+                    card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
+                }
+                
+                courseGrid.appendChild(card);
+            });
+        }
+
+        // Déconnexion
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
