@@ -428,8 +428,11 @@ function showSuccessNotification(message) {
     document.body.appendChild(notification);
     
     setTimeout(() => {
-        notification.remove();
-    }, 3000);
+        notification.style.animation = 'fadeOut 0.5s ease forwards';
+        setTimeout(() => {
+            notification.remove();
+        }, 500);
+    }, 2500);
 }
 
 // Charger les cours depuis Firestore

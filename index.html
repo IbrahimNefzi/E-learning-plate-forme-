@@ -631,6 +631,76 @@
         .delay-3 {
             animation-delay: 0.3s;
         }
+		
+        /* Styles pour les nouvelles sections */
+        .level-section {
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .level-title {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .subject-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .subject-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .subject-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #333;
+        }
+        
+        /* Styles pour la modale d'authentification */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -644,21 +714,28 @@
             
             <div class="nav-links">
                 <a href="#">Accueil</a>
-                <a href="#">Lycée</a>
-                <a href="#">Collège</a>
-                <a href="#">Offres</a>
+                <a href="#lycee">Lycée</a>
+                <a href="#college">Collège</a>
+                <a href="#offres">Offres</a>
             </div>
             
             <div class="auth-buttons">
-                <a href="app.html#login" class="auth-btn">
+                <a href="#" class="auth-btn" id="loginBtnIndex">
                     <i class="fas fa-sign-in-alt"></i> Connexion
                 </a>
-                <a href="app.html#register" class="auth-btn">
+                <a href="#" class="auth-btn" id="registerBtnIndex">
                     <i class="fas fa-user-plus"></i> Inscription
                 </a>
             </div>
         </div>
     </nav>
+
+    <!-- Modale d'authentification -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content" id="authModalContent">
+            <!-- Contenu chargé dynamiquement depuis app.html -->
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -833,12 +910,179 @@
 
     <!-- Footer -->
     <footer>
-        <p>IT-Bridge Plateforme Éducative © 2023</p>
+        <p>IT-Bridge Plateforme Éducative © 2025</p>
         <p>Votre réussite, notre priorité</p>
     </footer>
 
+    <!-- Section Lycée -->
+    <section id="lycee" class="section">
+        <h2 class="section-title">Lycée</h2>
+        
+        <div class="level-section">
+            <h3 class="level-title">1ère année secondaire</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Informatique</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">2ème année sciences</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Informatique</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">2ème année informatiques</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">🧩</div>
+                    <div class="subject-name">Algorithmes et Programmation</div>
+                <div class="subject-card">
+                    <div class="subject-icon">🌐</div>
+                    <div class="subject-name">STI</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">3ème année sciences</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Informatique</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">3ème année informatiques</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">🧩</div>
+                    <div class="subject-name">Algorithmes et Programmation</div>
+                <div class="subject-card">
+                    <div class="subject-icon">🌐</div>
+                    <div class="subject-name">STI</div>
+                </div>
+            </div>
+        </div>
+    </section>
+        <div class="level-section">
+            <h3 class="level-title">Bac scientifiques</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Informatique</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">Bac informatiques</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">🧩</div>
+                    <div class="subject-name">Algorithmes et Programmation</div>
+                <div class="subject-card">
+                    <div class="subject-icon">🌐</div>
+                    <div class="subject-name">STI</div>
+                </div>
+            </div>
+        </div>
+    <!-- Section Collège -->
+    <section id="college" class="section">
+        <h2 class="section-title">Collège</h2>
+        
+        <div class="level-section">
+            <h3 class="level-title">7ème année</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Initiation à l'informatique</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">8ème année</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Bureautique</div>
+                </div>
+                <div class="subject-card">
+                    <div class="subject-icon">🌐</div>
+                    <div class="subject-name">Internet</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="level-section">
+            <h3 class="level-title">9ème année</h3>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-name">Programmation basique</div>
+                </div>
+                <div class="subject-card">
+                    <div class="subject-icon">📱</div>
+                    <div class="subject-name">Technologies numériques</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Offres -->
+    <section id="offres" class="section">
+        <h2 class="section-title">Nos Offres</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3><span class="icon">🌟</span> Offre Découverte</h3>
+                <p>Gratuit</p>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Accès à 5 cours d'introduction</li>
+                    <li>Support communautaire</li>
+                    <li>Certificat de participation</li>
+                </ul>
+                <button class="auth-btn" style="margin-top: 20px;">Choisir cette offre</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3><span class="icon">🚀</span> Offre Premium</h3>
+                <p>19,99€/mois</p>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Accès complet à tous les cours</li>
+                    <li>Support prioritaire</li>
+                    <li>Certificats officiels</li>
+                    <li>Projets pratiques</li>
+                </ul>
+                <button class="auth-btn" style="margin-top: 20px;">Choisir cette offre</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3><span class="icon">👨‍👩‍👧‍👦</span> Offre Famille</h3>
+                <p>29,99€/mois</p>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Pour 4 membres de la famille</li>
+                    <li>Accès complet à tous les cours</li>
+                    <li>Suivi personnalisé</li>
+                    <li>Ateliers en direct</li>
+                </ul>
+                <button class="auth-btn" style="margin-top: 20px;">Choisir cette offre</button>
+            </div>
+        </div>
+    </section>
+
     <script>
-        // Carousel functionality
+       // Carousel functionality
         const carousel = document.getElementById('carouselInner');
         const items = document.querySelectorAll('.carousel-item');
         const indicators = document.querySelectorAll('.indicator');
@@ -922,6 +1166,136 @@
                 observer.observe(element);
             });
         });
+        
+        // Gestion de la modale d'authentification
+        document.getElementById('loginBtnIndex').addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('app.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const authContent = doc.querySelector('.auth-container').innerHTML;
+                    
+                    document.getElementById('authModalContent').innerHTML = authContent;
+                    document.getElementById('authModal').style.display = 'flex';
+                    
+                    // Initialiser les écouteurs
+                    setupAuthListeners();
+                });
+        });
+
+        document.getElementById('registerBtnIndex').addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('app.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const authContent = doc.querySelector('.auth-container').innerHTML;
+                    
+                    document.getElementById('authModalContent').innerHTML = authContent;
+                    document.getElementById('authModal').style.display = 'flex';
+                    
+                    // Basculer sur l'onglet d'inscription
+                    setTimeout(() => {
+                        document.getElementById('registerTab').click();
+                    }, 100);
+                });
+        });
+
+        // Fermer la modale en cliquant à l'extérieur
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+        
+        // Fonction pour initialiser les écouteurs (similaire à app.js)
+        function setupAuthListeners() {
+            // Écouteurs pour les onglets
+            document.getElementById('loginTab')?.addEventListener('click', () => switchAuthTab('login'));
+            document.getElementById('registerTab')?.addEventListener('click', () => switchAuthTab('register'));
+            
+            // Écouteurs pour les formulaires
+            document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
+            document.getElementById('registerForm')?.addEventListener('submit', handleRegister);
+            
+            // Écouteur pour la réinitialisation du mot de passe
+            document.getElementById('forgotPassword')?.addEventListener('click', showResetPasswordModal);
+        }
+        
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Form').classList.add('active');
+        }
+        
+        // Fonctions d'authentification (similaires à app.js)
+        async function handleLogin(e) {
+            e.preventDefault();
+			const email = document.getElementById('loginEmail').value;
+			const password = document.getElementById('loginPassword').value;
+			const loginBtn = document.getElementById('loginBtn');
+
+			if (!loginBtn) return;
+    
+			loginBtn.disabled = true;
+			loginBtn.textContent = 'Connexion...';
+
+			try {
+				await auth.signInWithEmailAndPassword(email, password);
+			} catch (error) {
+				loginBtn.disabled = false;
+				loginBtn.textContent = 'Se connecter';
+				showAuthAlert(getFirebaseErrorMessage(error));
+			}
+        }
+        
+        async function handleRegister(e) {
+            e.preventDefault();
+			const name = document.getElementById('registerName').value;
+			const email = document.getElementById('registerEmail').value;
+			const password = document.getElementById('registerPassword').value;
+			const registerBtn = document.getElementById('registerBtn');
+
+			if (!registerBtn) return;
+    
+			registerBtn.disabled = true;
+			registerBtn.textContent = 'Création...';
+
+			try {
+				const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        
+				// Mettre à jour le profil utilisateur
+				await userCredential.user.updateProfile({
+					displayName: name
+				});
+
+				// Stocker l'utilisateur dans Firestore
+				await db.collection('users').doc(userCredential.user.uid).set({
+					name: name,
+					email: email,
+					createdAt: firebase.firestore.FieldValue.serverTimestamp()
+				});
+
+					// Afficher un message de succès
+					showAuthAlert('Compte créé avec succès !', 'success');
+					
+					// Basculer vers l'onglet connexion
+					setTimeout(() => {
+						switchAuthTab('login');
+						document.getElementById('loginEmail').value = email;
+					}, 1500);
+			} catch (error) {
+				showAuthAlert(getFirebaseErrorMessage(error));
+			} finally {
+				registerBtn.disabled = false;
+				registerBtn.textContent = 'Créer un compte';
+			}
+		}
     </script>
 </body>
 </html>
