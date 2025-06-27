@@ -1134,17 +1134,16 @@ function closeResetPasswordModal() {
 async function sendPasswordResetEmail() {
     const email = document.getElementById('resetEmail').value;
     if (!email) {
-        showAuthAlert("Veuillez entrer votre email", 'error');
+        alert("Veuillez entrer votre email");
         return;
     }
-
     try {
-        await auth.sendPasswordResetEmail(email, {
-            url: window.location.href.split('#')[0] + '#reset-password',
+        await firebase.auth().sendPasswordResetEmail(email, {
+            // URL de redirection personnalisée
+            url: 'https://ibrahimnefzi.github.io/E-learning-plate-forme-/#/reset-password',
             handleCodeInApp: true
         });
-        showAuthAlert(`Email envoyé à ${email}. Vérifiez votre boîte de réception.`, 'success');
-        setTimeout(() => navigateTo('auth'), 3000);
+        alert(`Email envoyé à ${email}. Vérifiez votre boîte de réception.`);
     } catch (error) {
         console.error("Erreur:", error);
         let message = "Une erreur est survenue";
@@ -1153,7 +1152,7 @@ async function sendPasswordResetEmail() {
         } else if (error.code === "auth/invalid-email") {
             message = "Adresse email invalide";
         }
-        showAuthAlert(`Erreur: ${message}`, 'error');
+        alert(`Erreur: ${message}`);
     }
 }
 
