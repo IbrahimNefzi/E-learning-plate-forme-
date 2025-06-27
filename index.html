@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPlatform - Plateforme Éducative</title>
+    <title>IT-Bridge - Plateforme Éducative</title>
     <link rel="icon" href="assets/logo.png" type="image/x-icon">
     <!-- Ajouter Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
@@ -844,6 +844,30 @@
             font-weight: bold;
         }
 
+        /* Notification de succès */
+        .success-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -974,7 +998,7 @@
                 <div class="header-content">
                     <div class="logo">
                         <div style="font-size: 2rem;">📚</div>
-                        <h1>EduPlatform</h1>
+                        <h1>IT-Bridge</h1>
                     </div>
                     
                     <div class="search-bar" id="studentSearchBar">
@@ -1000,7 +1024,9 @@
             <!-- Section Cours (pour étudiants et admins) -->
             <div id="courses" class="content-section active">
                 <div class="course-grid" id="courseGrid">
-                    <!-- Les cours seront générés dynamiquement -->
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
             </div>
 
@@ -1013,7 +1039,7 @@
                         <label for="contentType">Type de contenu</label>
                         <select id="contentType" onchange="toggleUploadFields()">
                             <option value="youtube">Vidéo YouTube</option>
-                            <option value="file">Fichier local</option>
+                            <option value="drive">Fichier Google Drive</option>
                         </select>
                     </div>
 
@@ -1024,16 +1050,21 @@
                         </div>
                     </div>
 
-                    <div id="fileFields" style="display:none;">
-                        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                            <div class="upload-icon">📁</div>
-                            <h3>Glissez vos fichiers ici ou cliquez pour sélectionner</h3>
-                            <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
-                            <input type="file" id="fileInput" class="file-input" accept="video/*,.pdf" onchange="handleFileUpload(event)">
+                    <div id="driveFields" style="display:none;">
+                        <div class="form-group">
+                            <label for="driveUrl">Lien Google Drive</label>
+                            <input type="url" id="driveUrl" placeholder="https://drive.google.com/file/d/...">
+                        </div>
+                        <div class="form-group">
+                            <label for="fileType">Type de fichier</label>
+                            <select id="fileType">
+                                <option value="video">Vidéo</option>
+                                <option value="pdf">PDF</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Nouvelle section pour les pièces jointes Google Drive -->
+                    <!-- Section pour les pièces jointes Google Drive -->
                     <div class="drive-upload-container">
                         <h3>Pièces jointes via Google Drive</h3>
                         
@@ -1135,87 +1166,8 @@
         let currentUser = null;
         let currentVideoIframe = null;
         const ADMIN_EMAIL = "nefziibrahimd@gmail.com"; // Seul admin
-        let uploadedFiles = [];
-        let courses = [
-            {
-                id: 1,
-                title: "Introduction à JavaScript",
-                category: "programmation",
-                type: "youtube",
-                videoId: "PkZNo7MFNFg",
-                description: "Apprenez les bases de JavaScript avec des exemples pratiques",
-                views: 245,
-                duration: "45 min",
-                date: "2024-01-15",
-                author: "Prof. Martin",
-                attachments: [
-                    { 
-                        name: "Exercices.pdf", 
-                        type: "application/pdf", 
-                        size: "2.5 MB", 
-                        driveId: "1M_3zQrX9cZ7oXJkLmNpOqR",
-                        directLink: "https://drive.google.com/uc?export=download&id=1M_3zQrX9cZ7oXJkLmNpOqR"
-                    },
-                    { 
-                        name: "Code-exemple.js", 
-                        type: "application/javascript", 
-                        size: "15 KB", 
-                        driveId: "1A_2bCcD4eF5gH6iJ7kL8mN",
-                        directLink: "https://drive.google.com/uc?export=download&id=1A_2bCcD4eF5gH6iJ7kL8mN"
-                    }
-                ]
-            },
-            {
-                id: 2,
-                title: "Guide CSS Flexbox",
-                category: "web",
-                type: "pdf",
-                fileName: "flexbox-guide.pdf",
-                fileSize: "2.4 MB",
-                description: "Manuel complet sur l'utilisation de Flexbox en CSS",
-                views: 189,
-                pages: 24,
-                date: "2024-01-10",
-                author: "Prof. Martin",
-                attachments: [
-                    { 
-                        name: "Exercices-flexbox.html", 
-                        type: "text/html", 
-                        size: "35 KB", 
-                        driveId: "1Z_0xYwV2uT3sR4qP5oI6pL",
-                        directLink: "https://drive.google.com/uc?export=download&id=1Z_0xYwV2uT3sR4qP5oI6pL"
-                    }
-                ]
-            },
-            {
-                id: 3,
-                title: "Algorithmes de tri",
-                category: "algorithmes",
-                type: "youtube",
-                videoId: "kgBjXUE_Nwc",
-                description: "Comprendre les différents algorithmes de tri et leur complexité",
-                views: 156,
-                duration: "32 min",
-                date: "2024-01-08",
-                author: "Prof. Martin",
-                attachments: [
-                    { 
-                        name: "Implémentation Python.py", 
-                        type: "text/x-python", 
-                        size: "8 KB", 
-                        driveId: "1K_9jH8g7F6d5S4a3Q2w1eR",
-                        directLink: "https://drive.google.com/uc?export=download&id=1K_9jH8g7F6d5S4a3Q2w1eR"
-                    },
-                    { 
-                        name: "Diapositives.pdf", 
-                        type: "application/pdf", 
-                        size: "1.8 MB", 
-                        driveId: "1L_0oI9u8Y7t6R5e4W3q2w",
-                        directLink: "https://drive.google.com/uc?export=download&id=1L_0oI9u8Y7t6R5e4W3q2w"
-                    }
-                ]
-            }
-        ];
+        let courses = [];
+        let courseListener = null;
 
         // Fonction pour extraire l'ID d'un lien Google Drive
         function extractDriveId(url) {
@@ -1288,6 +1240,18 @@
             document.body.removeChild(link);
         }
 
+        // Afficher une notification de succès
+        function showSuccessNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'success-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             // Écouteur pour la touche Entrée dans la recherche
@@ -1310,12 +1274,47 @@
                         role: role
                     };
                     showMainInterface();
+                    loadCourses();
                 } else {
                     currentUser = null;
+                    if (courseListener) courseListener(); // Détacher l'écouteur
                     showAuthInterface();
                 }
             });
         });
+
+        // Charger les cours depuis Firestore
+        function loadCourses() {
+            const courseGrid = document.getElementById('courseGrid');
+            courseGrid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            // Détacher l'ancien écouteur s'il existe
+            if (courseListener) courseListener();
+            
+            // Attacher un nouvel écouteur en temps réel
+            courseListener = db.collection("courses").onSnapshot(snapshot => {
+                courses = [];
+                snapshot.forEach(doc => {
+                    const course = doc.data();
+                    course.id = doc.id;
+                    courses.push(course);
+                });
+                
+                renderCourses();
+                if (currentUser.role === 'admin') {
+                    loadStatistics();
+                }
+            }, error => {
+                console.error("Erreur de chargement des cours: ", error);
+                courseGrid.innerHTML = `
+                    <div class="no-courses">
+                        <div class="no-courses-icon">❌</div>
+                        <h3>Erreur de chargement des cours</h3>
+                        <p>Veuillez réessayer plus tard</p>
+                    </div>
+                `;
+            });
+        }
 
         // 1. Réinitialisation de mot de passe professionnelle
         function showResetPasswordModal() {
@@ -1385,7 +1384,7 @@
             } else {
                 contentHtml += `
                     <div style="display:flex;justify-content:center;align-items:center;height:100%;color:white;font-size:24px;">
-                        ${course.type === 'pdf' ? '📄 Prévisualisation du PDF' : '▶️ Lecture de la vidéo'}
+                        ${course.fileType === 'pdf' ? '📄 Prévisualisation du PDF' : '▶️ Lecture de la vidéo'}
                     </div>
                 `;
             }
@@ -1409,17 +1408,28 @@
                     iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
                     document.querySelector('.video-player-container').appendChild(iframe);
                     currentVideoIframe = iframe;
+                    
+                    // Mettre à jour le compteur de vues dans Firestore
+                    updateCourseViews(course.id, course.views);
                 });
             }
 
             document.getElementById('courseModal').style.display = 'block';
-            
-            // Augmenter le compteur de vues
-            course.views += 1;
-            document.querySelectorAll('.course-meta div:last-child').forEach(el => {
-                if (el.textContent.includes(course.views - 1)) {
-                    el.textContent = `👁️ ${course.views} vues`;
+        }
+
+        // Mettre à jour le compteur de vues dans Firestore
+        function updateCourseViews(courseId, currentViews) {
+            const newViews = currentViews + 1;
+            db.collection("courses").doc(courseId).update({
+                views: newViews
+            }).then(() => {
+                // Mettre à jour localement pour éviter un rechargement complet
+                const course = courses.find(c => c.id === courseId);
+                if (course) {
+                    course.views = newViews;
                 }
+            }).catch(error => {
+                console.error("Erreur lors de la mise à jour des vues: ", error);
             });
         }
 
@@ -1449,7 +1459,6 @@
                             ${file.name}
                             <span class="download-icon">⬇️</span>
                         </a>
-                        <span class="file-size">${file.size || ''}</span>
                     </li>
                 `;
             });
@@ -1585,14 +1594,6 @@
             
             // Générer les onglets de navigation selon le rôle
             generateNavigationTabs();
-            
-            // Afficher les cours
-            renderCourses();
-            
-            // Charger les statistiques si admin
-            if (currentUser.role === 'admin') {
-                loadStatistics();
-            }
         }
 
         // Générer les onglets de navigation
@@ -1650,8 +1651,6 @@
                 // Recharger les données si nécessaire
                 if (tabId === 'stats') {
                     loadStatistics();
-                } else if (tabId === 'courses') {
-                    renderCourses();
                 } else if (tabId === 'upload') {
                     resetUploadForm();
                 }
@@ -1681,18 +1680,18 @@
                 
                 const thumbnailContent = course.type === 'youtube' ? 
                     `<img src="https://img.youtube.com/vi/${course.videoId}/0.jpg" alt="${course.title}">
-                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
-                    course.type === 'pdf' ? 
+                     <button class="play-btn" onclick="openCourseModal('${course.id}')">▶</button>` :
+                    course.fileType === 'pdf' ? 
                     `<div class="pdf-icon">📄</div>` :
                     `<div class="video-placeholder">▶️</div>
-                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`;
+                     <button class="play-btn" onclick="openCourseModal('${course.id}')">▶</button>`;
                 
                 card.innerHTML = `
                     <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
                         ${thumbnailContent}
                         ${currentUser.role === 'admin' ? `
                         <div class="course-actions">
-                            <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
+                            <button class="delete-btn" onclick="deleteCourse('${course.id}')">🗑️</button>
                         </div>` : ''}
                     </div>
                     <div class="course-info">
@@ -1700,15 +1699,15 @@
                         <p>${course.description}</p>
                         <div class="course-meta">
                             <div>${course.type === 'youtube' ? '🎬 YouTube' : 
-                                  course.type === 'video' ? '🎬 ' + course.duration : 
+                                  course.fileType === 'video' ? '🎬 ' + (course.duration || 'N/A') : 
                                   '📄 ' + (course.pages || '0') + ' pages'}</div>
-                            <div>👁️ ${course.views} vues</div>
+                            <div>👁️ ${course.views || 0} vues</div>
                         </div>
                         <div class="course-category">${getCategoryLabel(course.category)}</div>
                     </div>
                 `;
                 
-                if (course.type === 'pdf') {
+                if (course.type === 'drive' && course.fileType === 'pdf') {
                     card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
                 }
                 
@@ -1739,38 +1738,15 @@
             return colors[category] || 'linear-gradient(45deg, #667eea, #764ba2)';
         }
 
-        // Basculer entre les champs YouTube et fichiers locaux
+        // Basculer entre les champs YouTube et Google Drive
         function toggleUploadFields() {
             const contentType = document.getElementById('contentType').value;
             document.getElementById('youtubeFields').style.display = contentType === 'youtube' ? 'block' : 'none';
-            document.getElementById('fileFields').style.display = contentType === 'file' ? 'block' : 'none';
-            resetUploadForm();
-        }
-
-        // Upload de fichiers
-        function handleFileUpload(event) {
-            uploadedFiles = Array.from(event.target.files);
-            const uploadArea = document.querySelector('.upload-area');
-            
-            // Afficher les fichiers sélectionnés
-            let filesHtml = '';
-            uploadedFiles.forEach(file => {
-                filesHtml += `<div class="file-item">
-                    <span>${file.name}</span>
-                    <span>(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                </div>`;
-            });
-            
-            uploadArea.innerHTML = `
-                <div class="upload-icon">📁</div>
-                <h3>Fichiers sélectionnés :</h3>
-                ${filesHtml}
-                <p style="margin-top: 10px; color: #666;">Cliquez pour modifier la sélection</p>
-            `;
+            document.getElementById('driveFields').style.display = contentType === 'drive' ? 'block' : 'none';
         }
 
         // Ajouter un nouveau cours
-        function addCourse() {
+        async function addCourse() {
             const title = document.getElementById('courseTitle').value;
             const category = document.getElementById('courseCategory').value;
             const description = document.getElementById('courseDescription').value;
@@ -1782,13 +1758,12 @@
             }
 
             const newCourse = {
-                id: courses.length + 1,
                 title,
                 category,
                 description,
                 views: 0,
                 author: currentUser.name,
-                date: new Date().toISOString().split('T')[0],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 attachments: getAttachments() // Récupérer les pièces jointes Google Drive
             };
 
@@ -1810,28 +1785,44 @@
                 newCourse.videoId = videoId;
                 newCourse.duration = "N/A";
             } else {
-                if (uploadedFiles.length === 0) {
-                    alert('Veuillez sélectionner un fichier');
+                const driveUrl = document.getElementById('driveUrl').value;
+                if (!driveUrl) {
+                    alert('Veuillez entrer un lien Google Drive');
                     return;
                 }
                 
-                const file = uploadedFiles[0];
-                newCourse.type = file.type.includes('video') ? 'video' : 'pdf';
-                newCourse.fileName = file.name;
-                newCourse.fileSize = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                const fileType = document.getElementById('fileType').value;
+                const driveId = extractDriveId(driveUrl);
+                if (!driveId) {
+                    alert('Lien Google Drive invalide');
+                    return;
+                }
                 
-                if (newCourse.type === 'video') {
-                    newCourse.duration = Math.floor(Math.random() * 60) + ' min';
+                newCourse.type = 'drive';
+                newCourse.fileType = fileType;
+                newCourse.driveId = driveId;
+                newCourse.directLink = `https://drive.google.com/uc?export=download&id=${driveId}`;
+                
+                if (fileType === 'video') {
+                    newCourse.duration = "N/A";
                 } else {
-                    newCourse.pages = Math.floor(Math.random() * 50) + 1;
+                    newCourse.pages = 0;
                 }
             }
 
-            courses.push(newCourse);
-            renderCourses();
-            resetUploadForm();
-            alert('Cours ajouté avec succès !');
-            switchTab('courses');
+            try {
+                // Ajouter le cours à Firestore
+                await db.collection("courses").add(newCourse);
+                
+                // Afficher une notification de succès
+                showSuccessNotification('Cours ajouté avec succès !');
+                
+                // Réinitialiser le formulaire
+                resetUploadForm();
+            } catch (error) {
+                console.error("Erreur lors de l'ajout du cours: ", error);
+                alert("Une erreur est survenue lors de l'ajout du cours");
+            }
         }
 
         // Extraire l'ID d'une URL YouTube
@@ -1846,17 +1837,7 @@
             document.getElementById('courseTitle').value = '';
             document.getElementById('courseDescription').value = '';
             document.getElementById('youtubeUrl').value = '';
-            document.getElementById('fileInput').value = '';
-            uploadedFiles = [];
-            
-            const uploadArea = document.querySelector('.upload-area');
-            if (uploadArea) {
-                uploadArea.innerHTML = `
-                    <div class="upload-icon">📁</div>
-                    <h3>Glissez vos fichiers ici ou cliquez pour sélectionner</h3>
-                    <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
-                `;
-            }
+            document.getElementById('driveUrl').value = '';
             
             // Réinitialiser les champs Google Drive
             document.getElementById('attachmentsContainer').innerHTML = `
@@ -1871,7 +1852,7 @@
         // Charger les statistiques
         function loadStatistics() {
             document.getElementById('totalCourses').textContent = courses.length;
-            document.getElementById('totalViews').textContent = courses.reduce((sum, course) => sum + course.views, 0);
+            document.getElementById('totalViews').textContent = courses.reduce((sum, course) => sum + (course.views || 0), 0);
             document.getElementById('totalStudents').textContent = "42"; // Valeur simulée
         }
 
@@ -1909,18 +1890,18 @@
                 
                 const thumbnailContent = course.type === 'youtube' ? 
                     `<img src="https://img.youtube.com/vi/${course.videoId}/0.jpg" alt="${course.title}">
-                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
-                    course.type === 'pdf' ? 
+                     <button class="play-btn" onclick="openCourseModal('${course.id}')">▶</button>` :
+                    course.fileType === 'pdf' ? 
                     `<div class="pdf-icon">📄</div>` :
                     `<div class="video-placeholder">▶️</div>
-                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`;
+                     <button class="play-btn" onclick="openCourseModal('${course.id}')">▶</button>`;
                 
                 card.innerHTML = `
                     <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
                         ${thumbnailContent}
                         ${currentUser.role === 'admin' ? `
                         <div class="course-actions">
-                            <button class="delete-btn" onclick="deleteCourse(${course.id})">🗑️</button>
+                            <button class="delete-btn" onclick="deleteCourse('${course.id}')">🗑️</button>
                         </div>` : ''}
                     </div>
                     <div class="course-info">
@@ -1928,15 +1909,15 @@
                         <p>${course.description}</p>
                         <div class="course-meta">
                             <div>${course.type === 'youtube' ? '🎬 YouTube' : 
-                                  course.type === 'video' ? '🎬 ' + course.duration : 
+                                  course.fileType === 'video' ? '🎬 ' + (course.duration || 'N/A') : 
                                   '📄 ' + (course.pages || '0') + ' pages'}</div>
-                            <div>👁️ ${course.views} vues</div>
+                            <div>👁️ ${course.views || 0} vues</div>
                         </div>
                         <div class="course-category">${getCategoryLabel(course.category)}</div>
                     </div>
                 `;
                 
-                if (course.type === 'pdf') {
+                if (course.type === 'drive' && course.fileType === 'pdf') {
                     card.querySelector('.course-thumbnail').addEventListener('click', () => openCourseModal(course.id));
                 }
                 
@@ -1945,11 +1926,15 @@
         }
 
         // Supprimer un cours
-        function deleteCourse(courseId) {
+        async function deleteCourse(courseId) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
-                courses = courses.filter(c => c.id !== courseId);
-                renderCourses();
-                loadStatistics();
+                try {
+                    await db.collection("courses").doc(courseId).delete();
+                    showSuccessNotification('Cours supprimé avec succès !');
+                } catch (error) {
+                    console.error("Erreur lors de la suppression du cours: ", error);
+                    alert("Une erreur est survenue lors de la suppression du cours");
+                }
             }
         }
 
@@ -1957,6 +1942,7 @@
         function logout() {
             auth.signOut().then(() => {
                 currentUser = null;
+                if (courseListener) courseListener(); // Détacher l'écouteur
                 showAuthInterface();
             }).catch(error => {
                 alert('Erreur lors de la déconnexion: ' + error.message);
