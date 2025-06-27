@@ -57,7 +57,7 @@ function renderAuthPage() {
         <div class="auth-container">
             <div class="auth-card">
                 <div class="auth-logo">🎓</div>
-                <h1 class="auth-title">EduPlatform</h1>
+                <h1 class="auth-title">IT-Bridge</h1>
                 
                 <div class="auth-tabs">
                     <button class="auth-tab active" id="loginTab">Connexion</button>
@@ -312,8 +312,18 @@ function renderMainApp() {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
+    // Gestion du routage basé sur le hash
+    const hash = window.location.hash.substring(1);
+    
     // Vérifier si on arrive via un lien de réinitialisation
     handlePasswordReset();
+    
+    // Gérer le routage initial
+    if (hash === 'register') {
+        currentPage = 'auth';
+    } else if (hash === 'reset') {
+        currentPage = 'reset';
+    }
     
     // Initialiser l'application
     renderApp();
@@ -494,6 +504,12 @@ function setupAuthListeners() {
     
     // Écouteur pour la réinitialisation du mot de passe
     document.getElementById('forgotPassword')?.addEventListener('click', showResetPasswordModal);
+    
+    // Vérifier le fragment initial
+    const hash = window.location.hash.substring(1);
+    if (hash === 'register') {
+        switchAuthTab('register');
+    }
 }
 
 // Configuration des écouteurs pour la réinitialisation
@@ -995,7 +1011,8 @@ function logout() {
     auth.signOut().then(() => {
         currentUser = null;
         if (courseListener) courseListener();
-        navigateTo('auth');
+        // Rediriger vers la page d'accueil après déconnexion
+        window.location.href = "index.html";
     }).catch(error => {
         alert('Erreur lors de la déconnexion: ' + error.message);
     });
@@ -1140,7 +1157,7 @@ async function sendPasswordResetEmail() {
     try {
         await firebase.auth().sendPasswordResetEmail(email, {
             // URL de redirection personnalisée
-            url: 'https://ibrahimnefzi.github.io/E-learning-plate-forme-/#/reset-password',
+            url: window.location.href.split('#')[0] + '#reset',
             handleCodeInApp: true
         });
         alert(`Email envoyé à ${email}. Vérifiez votre boîte de réception.`);
@@ -1188,7 +1205,7 @@ async function handleNewPasswordSubmit(e) {
         
         // Rediriger vers la page de connexion
         setTimeout(() => {
-            window.location.href = window.location.href.split('?')[0];
+            window.location.href = window.location.href.split('?')[0] + '#login';
             navigateTo('auth');
         }, 3000);
         

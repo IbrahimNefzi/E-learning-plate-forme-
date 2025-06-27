@@ -4,17 +4,924 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT-Bridge - Plateforme Éducative</title>
-    <link rel="icon" href="assets/logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%), url('https://images.unsplash.com/photo-1524178239882-824d9c8d6a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            z-index: -1;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #ffffff, #e0e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .auth-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            margin-top: 70px;
+        }
+
+        .slogan {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            color: white;
+            max-width: 900px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 40px;
+            max-width: 800px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Carousel Section */
+        .carousel-section {
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: #764ba2;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 6px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            margin: 15px auto;
+            border-radius: 3px;
+        }
+
+        .carousel {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: right;
+        }
+
+        .carousel-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .carousel-text {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .carousel-date {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ffcc00;
+        }
+
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 20px;
+        }
+
+        .carousel-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: #667eea;
+            transform: scale(1.3);
+        }
+
+        /* Content Sections */
+        .section {
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .section-alt {
+            background: rgba(248, 249, 250, 0.92);
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .feature-card h3 .icon {
+            font-size: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover h3 .icon {
+            transform: scale(1.2);
+        }
+
+        .feature-card p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 25px 30px;
+            min-width: 220px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Action Section */
+        .action-section {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(227, 242, 253, 0.9), rgba(187, 222, 251, 0.9));
+            text-align: center;
+            position: relative;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 20px 45px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn i {
+            font-size: 1.4rem;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .contact-card {
+            background: linear-gradient(145deg, #ffffff, #fff8e1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .contact-card h3 {
+            margin-bottom: 20px;
+            color: #764ba2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .contact-card p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(45deg, #333, #222);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 1rem;
+        }
+
+        footer p {
+            margin: 8px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .slogan {
+                font-size: 2.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slogan {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .carousel-title {
+                font-size: 1.8rem;
+            }
+            
+            .carousel-text {
+                font-size: 1.2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-item {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .carousel-image {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .slogan {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .auth-buttons {
+                display: none;
+            }
+            
+            .carousel-image {
+                height: 300px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+    </style>
 </head>
 <body>
-    <div id="appContainer">
-        <!-- Le contenu sera chargé dynamiquement par app.js -->
-    </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">📚</div>
+                <h1>IT-Bridge</h1>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#">Accueil</a>
+                <a href="#">Lycée</a>
+                <a href="#">Collège</a>
+                <a href="#">Offres</a>
+            </div>
+            
+            <div class="auth-buttons">
+                <a href="app.html#login" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i> Connexion
+                </a>
+                <a href="app.html#register" class="auth-btn">
+                    <i class="fas fa-user-plus"></i> Inscription
+                </a>
+            </div>
+        </div>
+    </nav>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <script src="app.js"></script>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="slogan animate">Le pont vers votre succès en informatiques</h1>
+        <p class="subtitle animate delay-1">Formations de qualité adaptées à tous les niveaux, du collège aux études supérieures</p>
+        <a href="app.html#register" class="btn btn-success animate delay-2">
+            <i class="fas fa-user-plus"></i> S'inscrire maintenant
+        </a>
+    </section>
+
+    <!-- Carousel Section -->
+    <section class="carousel-section">
+        <h2 class="section-title animate">Nos formations en vedette</h2>
+        
+        <div class="carousel">
+            <div class="carousel-inner" id="carouselInner">
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Formation en programmation" class="carousel-image">
+                    <div class="carousel-caption">
+                        <h3 class="carousel-title">Développement Web Avancé</h3>
+                        <p class="carousel-text">Maîtrisez les dernières technologies : React, Node.js et MongoDB</p>
+                        <p class="carousel-date">Début: 25 juin 2025</p>
+                    </div>
+                </div>
+                
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Formation en IA" class="carousel-image">
+                    <div class="carousel-caption">
+                        <h3 class="carousel-title">Intelligence Artificielle Fondamentale</h3>
+                        <p class="carousel-text">Découvrez les bases du machine learning et des réseaux de neurones</p>
+                        <p class="carousel-date">Début: 1 juillet 2025</p>
+                    </div>
+                </div>
+                
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80" alt="Formation en cybersécurité" class="carousel-image">
+                    <div class="carousel-caption">
+                        <h3 class="carousel-title">Cybersécurité pour Débutants</h3>
+                        <p class="carousel-text">Apprenez à protéger vos systèmes contre les cybermenaces</p>
+                        <p class="carousel-date">Début: 15 juillet 2025</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn" id="nextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="carousel-indicators" id="carouselIndicators">
+                <div class="indicator active"></div>
+                <div class="indicator"></div>
+                <div class="indicator"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section section-alt">
+        <h2 class="section-title animate">Pourquoi choisir IT-Bridge?</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card animate delay-1">
+                <h3><span class="icon">🎓</span> Formation complète</h3>
+                <p>Des cours structurés couvrant tous les aspects de l'informatique moderne, des bases aux technologies avancées.</p>
+            </div>
+            
+            <div class="feature-card animate delay-2">
+                <h3><span class="icon">👨‍🏫</span> Mentors experts</h3>
+                <p>Accompagnement par des professionnels expérimentés pour vous guider tout au long de votre parcours d'apprentissage.</p>
+            </div>
+            
+            <div class="feature-card animate delay-3">
+                <h3><span class="icon">💼</span> Projets pratiques</h3>
+                <p>Mise en pratique immédiate des connaissances acquises grâce à des projets concrets et des études de cas réels.</p>
+            </div>
+            
+            <div class="feature-card animate delay-1">
+                <h3><span class="icon">📱</span> Apprentissage flexible</h3>
+                <p>Accédez à nos ressources à tout moment et depuis n'importe quel appareil, à votre rythme.</p>
+            </div>
+            
+            <div class="feature-card animate delay-2">
+                <h3><span class="icon">🤝</span> Communauté active</h3>
+                <p>Rejoignez une communauté dynamique d'apprenants pour échanger, collaborer et progresser ensemble.</p>
+            </div>
+            
+            <div class="feature-card animate delay-3">
+                <h3><span class="icon">📜</span> Certifications reconnues</h3>
+                <p>Obtenez des certifications valorisantes qui attestent de vos compétences auprès des employeurs.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section">
+        <h2 class="section-title animate">IT-Bridge en chiffres</h2>
+        
+        <div class="stats">
+            <div class="stat-item animate delay-1">
+                <div class="stat-number">500+</div>
+                <div>Étudiants actifs</div>
+            </div>
+            
+            <div class="stat-item animate delay-2">
+                <div class="stat-number">30+</div>
+                <div>Cours disponibles</div>
+            </div>
+            
+            <div class="stat-item animate delay-3">
+                <div class="stat-number">98%</div>
+                <div>Satisfaction des apprenants</div>
+            </div>
+            
+            <div class="stat-item animate delay-1">
+                <div class="stat-number">15+</div>
+                <div>Experts pédagogiques</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Section -->
+    <section class="action-section">
+        <h2 class="section-title animate">Prêt à commencer votre voyage?</h2>
+        <p class="subtitle animate delay-1">Rejoignez notre communauté d'apprenants dès aujourd'hui !</p>
+        <a href="app.html#register" class="btn btn-success animate delay-2">
+            <i class="fas fa-graduation-cap"></i> Commencez votre parcours
+        </a>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section">
+        <h2 class="section-title animate">Contactez-nous</h2>
+        
+        <div class="contact-grid">
+            <div class="contact-card animate delay-1">
+                <h3><i class="fas fa-envelope"></i> Email</h3>
+                <p>support@it-bridge.fr</p>
+                <p>info@it-bridge.fr</p>
+            </div>
+            
+            <div class="contact-card animate delay-2">
+                <h3><i class="fas fa-phone"></i> Téléphone</h3>
+                <p>+33 1 23 45 67 89</p>
+                <p>Support technique: +33 1 98 76 54 32</p>
+            </div>
+            
+            <div class="contact-card animate delay-3">
+                <h3><i class="fas fa-map-marker-alt"></i> Adresse</h3>
+                <p>IT-Bridge Campus</p>
+                <p>123 Avenue de la Technologie</p>
+                <p>75000 Paris, France</p>
+            </div>
+            
+            <div class="contact-card animate delay-1">
+                <h3><i class="fas fa-clock"></i> Horaires</h3>
+                <p>Lundi-Vendredi: 9h-18h</p>
+                <p>Samedi: 10h-16h</p>
+                <p>Dimanche: Fermé</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to top button -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer>
+        <p>IT-Bridge Plateforme Éducative © 2023</p>
+        <p>Votre réussite, notre priorité</p>
+    </footer>
+
+    <script>
+        // Carousel functionality
+        const carousel = document.getElementById('carouselInner');
+        const items = document.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll('.indicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentIndex = 0;
+        const totalItems = items.length;
+        
+        function updateCarousel() {
+            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Update indicators
+            indicators.forEach((indicator, index) => {
+                if (index === currentIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalItems;
+            updateCarousel();
+        });
+        
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+            updateCarousel();
+        });
+        
+        // Auto slide
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalItems;
+            updateCarousel();
+        }, 5000);
+        
+        // Click on indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+            });
+        });
+        
+        // Back to top button
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.visibility = 'visible';
+                        entry.target.classList.add('animate');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animateElements.forEach(element => {
+                element.style.visibility = 'hidden';
+                observer.observe(element);
+            });
+        });
+    </script>
 </body>
 </html>
