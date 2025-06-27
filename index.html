@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPlatform - Authentification Firebase</title>
+    <title>EduPlatform - Plateforme Éducative</title>
+    <link rel="icon" href="assets/logo.png" type="image/x-icon">
     <!-- Ajouter Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
@@ -672,6 +674,177 @@
             text-decoration: underline;
         }
 
+        .password-reset-container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .password-reset-container h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #videoPlayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .play-btn-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.9);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn-overlay:hover {
+            background: white;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .attachments-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .attachments-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .attachment-list {
+            list-style: none;
+        }
+
+        .attachment-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .attachment-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .attachment-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .attachment-link:hover {
+            text-decoration: underline;
+        }
+
+        .download-icon {
+            margin-left: 8px;
+            font-size: 0.9em;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Nouveaux styles pour l'interface Drive */
+        .drive-upload-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .drive-instructions {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .drive-instructions ol {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .drive-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .attachment-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .attachment-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .add-attachment-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        .remove-attachment {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -707,6 +880,30 @@
             .video-player {
                 height: 300px;
             }
+            
+            .password-reset-container {
+                margin: 20px;
+                padding: 20px;
+            }
+            
+            .attachment-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .file-size {
+                margin-top: 5px;
+                align-self: flex-end;
+            }
+            
+            .attachment-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .attachment-input input {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -735,7 +932,7 @@
                     <input type="password" id="loginPassword" required>
                 </div>
                 <button type="submit" class="auth-btn" id="loginBtn">Se connecter</button>
-                <a href="#" class="forgot-password" onclick="resetPassword()">Mot de passe oublié ?</a>
+                <a href="#" class="forgot-password" onclick="showResetPasswordModal()">Mot de passe oublié ?</a>
             </form>
 
             <!-- Formulaire d'inscription -->
@@ -752,18 +949,24 @@
                     <label for="registerPassword">Mot de passe</label>
                     <input type="password" id="registerPassword" required minlength="6">
                 </div>
-                <div class="form-group">
-                    <label for="registerRole">Rôle</label>
-                    <select id="registerRole" required>
-                        <option value="student">Étudiant</option>
-                        <option value="admin">Professeur/Admin</option>
-                    </select>
-                </div>
                 <button type="submit" class="auth-btn" id="registerBtn">Créer un compte</button>
             </form>
         </div>
     </div>
-
+    
+    <!-- Modal de réinitialisation de mot de passe -->
+    <div id="resetPasswordModal" class="modal">
+        <div class="password-reset-container">
+            <h2>Réinitialisation du mot de passe</h2>
+            <div class="form-group">
+                <label for="resetEmail">Votre adresse email</label>
+                <input type="email" id="resetEmail" placeholder="Entrez votre email enregistré">
+            </div>
+            <button class="auth-btn" onclick="sendPasswordResetEmail()">Envoyer le lien</button>
+            <button class="auth-btn" style="background: #666; margin-top: 10px;" onclick="closeResetPasswordModal()">Annuler</button>
+        </div>
+    </div>
+    
     <!-- Interface principale -->
     <div id="mainApp" class="main-app">
         <div class="container">
@@ -830,10 +1033,29 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="attachments">Pièces jointes (PDF, .py, .html, etc.)</label>
-                        <input type="file" id="attachments" class="file-input" multiple onchange="handleAttachments()">
-                        <div id="attachmentsList"></div>
+                    <!-- Nouvelle section pour les pièces jointes Google Drive -->
+                    <div class="drive-upload-container">
+                        <h3>Pièces jointes via Google Drive</h3>
+                        
+                        <div class="drive-instructions">
+                            <strong>Instructions:</strong>
+                            <ol>
+                                <li>Uploader vos fichiers sur Google Drive</li>
+                                <li>Partager le fichier en mode "Toute personne disposant du lien peut consulter"</li>
+                                <li>Copier le lien de partage</li>
+                                <li>Coller le lien et donner un nom descriptif ci-dessous</li>
+                            </ol>
+                        </div>
+                        
+                        <div id="attachmentsContainer">
+                            <div class="attachment-input">
+                                <input type="text" placeholder="Nom du fichier" class="attachment-name">
+                                <input type="text" placeholder="Lien Google Drive" class="attachment-url">
+                                <button class="remove-attachment" onclick="removeAttachmentField(this)">×</button>
+                            </div>
+                        </div>
+                        
+                        <button class="add-attachment-btn" onclick="addAttachmentField()">+ Ajouter une pièce jointe</button>
                     </div>
 
                     <div class="form-group">
@@ -894,12 +1116,12 @@
     </div>
 
     <script>
-        // Configuration Firebase - Remplacez par votre configuration
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDtneirAz5uf9I_G5C9_iY2WSCfbD5b0vc",
             authDomain: "it-bridge-ca82b.firebaseapp.com",
             projectId: "it-bridge-ca82b",
-            storageBucket: "it-bridge-ca82b.firebasestorage.app",
+            storageBucket: "it-bridge-ca82b.appspot.com",
             messagingSenderId: "264260582161",
             appId: "1:264260582161:web:4808e9146b3e1c7c4c6ab0"
         };
@@ -907,11 +1129,13 @@
         // Initialiser Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         // Variables globales
         let currentUser = null;
+        let currentVideoIframe = null;
+        const ADMIN_EMAIL = "nefziibrahimd@gmail.com"; // Seul admin
         let uploadedFiles = [];
-        let attachments = [];
         let courses = [
             {
                 id: 1,
@@ -925,8 +1149,20 @@
                 date: "2024-01-15",
                 author: "Prof. Martin",
                 attachments: [
-                    { name: "Exercices.pdf", type: "application/pdf", size: 2500000 },
-                    { name: "Code-exemple.js", type: "application/javascript", size: 15000 }
+                    { 
+                        name: "Exercices.pdf", 
+                        type: "application/pdf", 
+                        size: "2.5 MB", 
+                        driveId: "1M_3zQrX9cZ7oXJkLmNpOqR",
+                        directLink: "https://drive.google.com/uc?export=download&id=1M_3zQrX9cZ7oXJkLmNpOqR"
+                    },
+                    { 
+                        name: "Code-exemple.js", 
+                        type: "application/javascript", 
+                        size: "15 KB", 
+                        driveId: "1A_2bCcD4eF5gH6iJ7kL8mN",
+                        directLink: "https://drive.google.com/uc?export=download&id=1A_2bCcD4eF5gH6iJ7kL8mN"
+                    }
                 ]
             },
             {
@@ -935,14 +1171,20 @@
                 category: "web",
                 type: "pdf",
                 fileName: "flexbox-guide.pdf",
-                fileSize: 2400000,
+                fileSize: "2.4 MB",
                 description: "Manuel complet sur l'utilisation de Flexbox en CSS",
                 views: 189,
                 pages: 24,
                 date: "2024-01-10",
                 author: "Prof. Martin",
                 attachments: [
-                    { name: "Exercices-flexbox.html", type: "text/html", size: 35000 }
+                    { 
+                        name: "Exercices-flexbox.html", 
+                        type: "text/html", 
+                        size: "35 KB", 
+                        driveId: "1Z_0xYwV2uT3sR4qP5oI6pL",
+                        directLink: "https://drive.google.com/uc?export=download&id=1Z_0xYwV2uT3sR4qP5oI6pL"
+                    }
                 ]
             },
             {
@@ -957,11 +1199,94 @@
                 date: "2024-01-08",
                 author: "Prof. Martin",
                 attachments: [
-                    { name: "Implémentation Python.py", type: "text/x-python", size: 8000 },
-                    { name: "Diapositives.pdf", type: "application/pdf", size: 1800000 }
+                    { 
+                        name: "Implémentation Python.py", 
+                        type: "text/x-python", 
+                        size: "8 KB", 
+                        driveId: "1K_9jH8g7F6d5S4a3Q2w1eR",
+                        directLink: "https://drive.google.com/uc?export=download&id=1K_9jH8g7F6d5S4a3Q2w1eR"
+                    },
+                    { 
+                        name: "Diapositives.pdf", 
+                        type: "application/pdf", 
+                        size: "1.8 MB", 
+                        driveId: "1L_0oI9u8Y7t6R5e4W3q2w",
+                        directLink: "https://drive.google.com/uc?export=download&id=1L_0oI9u8Y7t6R5e4W3q2w"
+                    }
                 ]
             }
         ];
+
+        // Fonction pour extraire l'ID d'un lien Google Drive
+        function extractDriveId(url) {
+            // Format 1: https://drive.google.com/file/d/DRIVE_ID/view?usp=sharing
+            const match1 = url.match(/\/file\/d\/([^\/]+)/);
+            if (match1 && match1[1]) return match1[1];
+            
+            // Format 2: https://drive.google.com/open?id=DRIVE_ID
+            const match2 = url.match(/[?&]id=([^&]+)/);
+            if (match2 && match2[1]) return match2[1];
+            
+            // Format 3: DRIVE_ID seul
+            if (url.length > 20 && url.length < 50) return url;
+            
+            return null;
+        }
+
+        // Ajouter un champ pour une nouvelle pièce jointe
+        function addAttachmentField() {
+            const container = document.getElementById('attachmentsContainer');
+            const div = document.createElement('div');
+            div.className = 'attachment-input';
+            div.innerHTML = `
+                <input type="text" placeholder="Nom du fichier" class="attachment-name">
+                <input type="text" placeholder="Lien Google Drive" class="attachment-url">
+                <button class="remove-attachment" onclick="removeAttachmentField(this)">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Supprimer un champ de pièce jointe
+        function removeAttachmentField(button) {
+            button.parentElement.remove();
+        }
+
+        // Récupérer les pièces jointes saisies
+        function getAttachments() {
+            const attachments = [];
+            const inputs = document.querySelectorAll('.attachment-input');
+            
+            inputs.forEach(input => {
+                const name = input.querySelector('.attachment-name').value;
+                const url = input.querySelector('.attachment-url').value;
+                
+                if (name && url) {
+                    const driveId = extractDriveId(url);
+                    if (driveId) {
+                        attachments.push({
+                            name: name,
+                            driveId: driveId,
+                            directLink: `https://drive.google.com/uc?export=download&id=${driveId}`
+                        });
+                    } else {
+                        alert(`Le lien Google Drive est invalide pour "${name}". Veuillez vérifier le format.`);
+                    }
+                }
+            });
+            
+            return attachments;
+        }
+
+        // Fonction pour télécharger les pièces jointes
+        function downloadAttachment(directLink, filename) {
+            const link = document.createElement('a');
+            link.href = directLink;
+            link.download = filename;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -971,25 +1296,171 @@
                     searchCourses();
                 }
             });
-
+            
             // Observer l'état d'authentification
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Utilisateur connecté
+                    // Déterminer le rôle: admin uniquement pour l'email spécifique
+                    const role = user.email === ADMIN_EMAIL ? 'admin' : 'student';
+                    
                     currentUser = {
                         uid: user.uid,
                         email: user.email,
                         name: user.displayName || user.email.split('@')[0],
-                        role: localStorage.getItem(`role_${user.uid}`) || 'student'
+                        role: role
                     };
                     showMainInterface();
                 } else {
-                    // Utilisateur non connecté
                     currentUser = null;
                     showAuthInterface();
                 }
             });
         });
+
+        // 1. Réinitialisation de mot de passe professionnelle
+        function showResetPasswordModal() {
+            const email = document.getElementById('loginEmail').value;
+            if (email) {
+                document.getElementById('resetEmail').value = email;
+            }
+            document.getElementById('resetPasswordModal').style.display = 'flex';
+        }
+
+        function closeResetPasswordModal() {
+            document.getElementById('resetPasswordModal').style.display = 'none';
+        }
+
+        async function sendPasswordResetEmail() {
+            const email = document.getElementById('resetEmail').value;
+            const btn = document.querySelector('#resetPasswordModal .auth-btn');
+            
+            if (!email) {
+                alert("Veuillez entrer une adresse email valide");
+                return;
+            }
+
+            const originalText = btn.textContent;
+            btn.textContent = "Envoi en cours...";
+            btn.disabled = true;
+
+            try {
+                await auth.sendPasswordResetEmail(email, {
+                    url: window.location.href,
+                    handleCodeInApp: false
+                });
+                
+                alert(`Un email de réinitialisation a été envoyé à ${email}. Vérifiez votre boîte de réception.`);
+                closeResetPasswordModal();
+            } catch (error) {
+                alert(`Erreur: ${getFirebaseErrorMessage(error)}`);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // 2. Correction du démarrage automatique des vidéos
+        function openCourseModal(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            const modalContent = document.getElementById('modalContent');
+            
+            // Fermer toute vidéo en cours
+            if (currentVideoIframe) {
+                currentVideoIframe.remove();
+                currentVideoIframe = null;
+            }
+
+            let contentHtml = `
+                <h2 style="margin-bottom: 20px; color: #333;">${course.title}</h2>
+                <p style="margin-bottom: 15px; color: #666;">${course.description}</p>
+                <div class="video-player-container">
+            `;
+
+            if (course.type === 'youtube') {
+                contentHtml += `
+                    <div class="play-btn-overlay" id="playButton">
+                        <span style="font-size: 24px;">▶</span>
+                    </div>
+                `;
+            } else {
+                contentHtml += `
+                    <div style="display:flex;justify-content:center;align-items:center;height:100%;color:white;font-size:24px;">
+                        ${course.type === 'pdf' ? '📄 Prévisualisation du PDF' : '▶️ Lecture de la vidéo'}
+                    </div>
+                `;
+            }
+
+            contentHtml += `</div>`;
+
+            // Ajouter les pièces jointes
+            contentHtml += renderAttachments(course);
+
+            modalContent.innerHTML = contentHtml;
+
+            // Gestion du clic sur le bouton play
+            if (course.type === 'youtube') {
+                document.getElementById('playButton').addEventListener('click', function() {
+                    this.remove();
+                    const iframe = document.createElement('iframe');
+                    iframe.id = 'videoPlayer';
+                    iframe.src = `https://www.youtube.com/embed/${course.videoId}?rel=0&modestbranding=1`;
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allowfullscreen', '');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                    document.querySelector('.video-player-container').appendChild(iframe);
+                    currentVideoIframe = iframe;
+                });
+            }
+
+            document.getElementById('courseModal').style.display = 'block';
+            
+            // Augmenter le compteur de vues
+            course.views += 1;
+            document.querySelectorAll('.course-meta div:last-child').forEach(el => {
+                if (el.textContent.includes(course.views - 1)) {
+                    el.textContent = `👁️ ${course.views} vues`;
+                }
+            });
+        }
+
+        function closeModal() {
+            if (currentVideoIframe) {
+                currentVideoIframe.remove();
+                currentVideoIframe = null;
+            }
+            document.getElementById('courseModal').style.display = 'none';
+        }
+
+        // 3. Téléchargement des pièces jointes avec Google Drive
+        function renderAttachments(course) {
+            if (!course.attachments || course.attachments.length === 0) return '';
+            
+            let html = `
+                <div class="attachments-section">
+                    <h3>Documents du cours</h3>
+                    <ul class="attachment-list">
+            `;
+
+            course.attachments.forEach(file => {
+                html += `
+                    <li class="attachment-item">
+                        <a href="#" class="attachment-link" 
+                           onclick="downloadAttachment('${file.directLink}', '${file.name}')">
+                            ${file.name}
+                            <span class="download-icon">⬇️</span>
+                        </a>
+                        <span class="file-size">${file.size || ''}</span>
+                    </li>
+                `;
+            });
+
+            html += `
+                    </ul>
+                </div>
+            `;
+
+            return html;
+        }
 
         // Basculer entre connexion et inscription
         function switchAuthTab(tab) {
@@ -1038,7 +1509,6 @@
             const name = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-            const role = document.getElementById('registerRole').value;
             const registerBtn = document.getElementById('registerBtn');
 
             registerBtn.disabled = true;
@@ -1052,8 +1522,12 @@
                     displayName: name
                 });
 
-                // Stocker le rôle dans localStorage
-                localStorage.setItem(`role_${userCredential.user.uid}`, role);
+                // Stocker l'utilisateur dans Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
 
                 // Afficher un message de succès
                 showAuthAlert('Compte créé avec succès !', 'success');
@@ -1070,20 +1544,6 @@
                 registerBtn.textContent = 'Créer un compte';
             }
         });
-
-        // Réinitialiser le mot de passe
-        function resetPassword() {
-            const email = prompt('Entrez votre adresse email:');
-            if (email) {
-                auth.sendPasswordResetEmail(email)
-                    .then(() => {
-                        showAuthAlert('Email de réinitialisation envoyé !', 'success');
-                    })
-                    .catch(error => {
-                        showAuthAlert(getFirebaseErrorMessage(error));
-                    });
-            }
-        }
 
         // Traduire les erreurs Firebase
         function getFirebaseErrorMessage(error) {
@@ -1133,9 +1593,6 @@
             if (currentUser.role === 'admin') {
                 loadStatistics();
             }
-
-            // Sauvegarder l'onglet actif
-            localStorage.setItem('activeTab', 'courses');
         }
 
         // Générer les onglets de navigation
@@ -1199,12 +1656,6 @@
                     resetUploadForm();
                 }
             }
-            
-            // Sauvegarder l'onglet actif
-            localStorage.setItem('activeTab', tabId);
-            
-            // Empêcher le comportement par défaut
-            return false;
         }
 
         // Afficher les cours
@@ -1231,10 +1682,10 @@
                 const thumbnailContent = course.type === 'youtube' ? 
                     `<img src="https://img.youtube.com/vi/${course.videoId}/0.jpg" alt="${course.title}">
                      <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
-                    course.type === 'video' ? 
+                    course.type === 'pdf' ? 
+                    `<div class="pdf-icon">📄</div>` :
                     `<div class="video-placeholder">▶️</div>
-                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
-                    `<div class="pdf-icon">📄</div>`;
+                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`;
                 
                 card.innerHTML = `
                     <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
@@ -1318,25 +1769,6 @@
             `;
         }
 
-        // Gérer les pièces jointes
-        function handleAttachments() {
-            const files = Array.from(document.getElementById('attachments').files);
-            attachments = files;
-            
-            const attachmentsList = document.getElementById('attachmentsList');
-            attachmentsList.innerHTML = '';
-            
-            files.forEach(file => {
-                const item = document.createElement('div');
-                item.className = 'attachment-item';
-                item.innerHTML = `
-                    <span>${file.name}</span>
-                    <span>(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                `;
-                attachmentsList.appendChild(item);
-            });
-        }
-
         // Ajouter un nouveau cours
         function addCourse() {
             const title = document.getElementById('courseTitle').value;
@@ -1357,11 +1789,7 @@
                 views: 0,
                 author: currentUser.name,
                 date: new Date().toISOString().split('T')[0],
-                attachments: attachments.map(file => ({
-                    name: file.name,
-                    type: file.type,
-                    size: file.size
-                }))
+                attachments: getAttachments() // Récupérer les pièces jointes Google Drive
             };
 
             if (contentType === 'youtube') {
@@ -1390,7 +1818,7 @@
                 const file = uploadedFiles[0];
                 newCourse.type = file.type.includes('video') ? 'video' : 'pdf';
                 newCourse.fileName = file.name;
-                newCourse.fileSize = file.size;
+                newCourse.fileSize = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
                 
                 if (newCourse.type === 'video') {
                     newCourse.duration = Math.floor(Math.random() * 60) + ' min';
@@ -1418,10 +1846,8 @@
             document.getElementById('courseTitle').value = '';
             document.getElementById('courseDescription').value = '';
             document.getElementById('youtubeUrl').value = '';
-            document.getElementById('attachments').value = '';
-            document.getElementById('attachmentsList').innerHTML = '';
+            document.getElementById('fileInput').value = '';
             uploadedFiles = [];
-            attachments = [];
             
             const uploadArea = document.querySelector('.upload-area');
             if (uploadArea) {
@@ -1431,13 +1857,22 @@
                     <p style="margin-top: 10px; color: #666;">Formats supportés : MP4, PDF, MOV, AVI</p>
                 `;
             }
+            
+            // Réinitialiser les champs Google Drive
+            document.getElementById('attachmentsContainer').innerHTML = `
+                <div class="attachment-input">
+                    <input type="text" placeholder="Nom du fichier" class="attachment-name">
+                    <input type="text" placeholder="Lien Google Drive" class="attachment-url">
+                    <button class="remove-attachment" onclick="removeAttachmentField(this)">×</button>
+                </div>
+            `;
         }
 
         // Charger les statistiques
         function loadStatistics() {
             document.getElementById('totalCourses').textContent = courses.length;
             document.getElementById('totalViews').textContent = courses.reduce((sum, course) => sum + course.views, 0);
-            document.getElementById('totalStudents').textContent = users.filter(u => u.role === 'student').length;
+            document.getElementById('totalStudents').textContent = "42"; // Valeur simulée
         }
 
         // Recherche de cours
@@ -1475,10 +1910,10 @@
                 const thumbnailContent = course.type === 'youtube' ? 
                     `<img src="https://img.youtube.com/vi/${course.videoId}/0.jpg" alt="${course.title}">
                      <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
-                    course.type === 'video' ? 
+                    course.type === 'pdf' ? 
+                    `<div class="pdf-icon">📄</div>` :
                     `<div class="video-placeholder">▶️</div>
-                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>` :
-                    `<div class="pdf-icon">📄</div>`;
+                     <button class="play-btn" onclick="openCourseModal(${course.id})">▶</button>`;
                 
                 card.innerHTML = `
                     <div class="course-thumbnail" style="background: ${getCategoryColor(course.category)}">
@@ -1509,94 +1944,6 @@
             });
         }
 
-        // Ouvrir un cours
-        function openCourseModal(courseId) {
-            const course = courses.find(c => c.id === courseId);
-            const modalContent = document.getElementById('modalContent');
-            
-            if (course.type === 'youtube') {
-                modalContent.innerHTML = `
-                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
-                    <div class="video-player">
-                        <iframe width="100%" height="100%" 
-                                src="https://www.youtube.com/embed/${course.videoId}?autoplay=1" 
-                                frameborder="0" allowfullscreen></iframe>
-                    </div>
-                    <div style="margin-top:20px;">
-                        <p><strong>Auteur:</strong> ${course.author}</p>
-                        <p><strong>Date:</strong> ${course.date}</p>
-                        <p>${course.description}</p>
-                    </div>
-                    ${renderAttachments(course)}
-                `;
-            } else if (course.type === 'video') {
-                modalContent.innerHTML = `
-                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
-                    <div class="video-player">
-                        <div style="display:flex;justify-content:center;align-items:center;height:100%;color:white;">
-                            Lecture de la vidéo (simulation)
-                        </div>
-                    </div>
-                    <div style="margin-top:20px;">
-                        <p><strong>Auteur:</strong> ${course.author}</p>
-                        <p><strong>Date:</strong> ${course.date}</p>
-                        <p>${course.description}</p>
-                    </div>
-                    ${renderAttachments(course)}
-                `;
-            } else {
-                modalContent.innerHTML = `
-                    <h2 style="margin-bottom: 20px;">${course.title}</h2>
-                    <div style="height: 500px; background: #f0f0f0; display: flex; justify-content: center; align-items: center;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 6rem;">📄</div>
-                            <p>Prévisualisation du document PDF</p>
-                            <button class="auth-btn" style="margin-top:20px;">Télécharger le PDF</button>
-                        </div>
-                    </div>
-                    <div style="margin-top:20px;">
-                        <p><strong>Pages:</strong> ${course.pages || '0'}</p>
-                        <p><strong>Date:</strong> ${course.date}</p>
-                        <p>${course.description}</p>
-                    </div>
-                    ${renderAttachments(course)}
-                `;
-            }
-            
-            // Augmenter le compteur de vues
-            course.views += 1;
-            
-            // Ouvrir la modal
-            document.getElementById('courseModal').style.display = 'block';
-        }
-
-        // Afficher les pièces jointes
-        function renderAttachments(course) {
-            if (!course.attachments || course.attachments.length === 0) return '';
-            
-            let html = '<div style="margin-top:20px;"><h3>Pièces jointes :</h3><ul>';
-            course.attachments.forEach(file => {
-                html += `<li class="attachment-item">
-                    <a href="#" onclick="downloadAttachment('${file.name}')">
-                        ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
-                    </a>
-                </li>`;
-            });
-            html += '</ul></div>';
-            return html;
-        }
-
-        // Fonction de simulation de téléchargement
-        function downloadAttachment(filename) {
-            alert(`Simulation: Téléchargement de ${filename}`);
-            // Dans une vraie application, vous feriez une requête au serveur
-        }
-
-        // Fermer la modal
-        function closeModal() {
-            document.getElementById('courseModal').style.display = 'none';
-        }
-
         // Supprimer un cours
         function deleteCourse(courseId) {
             if (confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')) {
@@ -1609,27 +1956,12 @@
         // Déconnexion
         function logout() {
             auth.signOut().then(() => {
-                localStorage.removeItem('activeTab');
                 currentUser = null;
                 showAuthInterface();
             }).catch(error => {
                 alert('Erreur lors de la déconnexion: ' + error.message);
             });
         }
-
-        // Gérer le bouton retour
-        window.addEventListener('popstate', function(event) {
-            if (currentUser) {
-                // Restaurer l'onglet actif depuis l'historique
-                const activeTab = localStorage.getItem('activeTab') || 'courses';
-                switchTab(activeTab);
-            }
-        });
-
-        // Helper pour la sélection CSS :contains
-        HTMLElement.prototype.contains = function(text) {
-            return this.textContent.includes(text);
-        };
     </script>
 </body>
 </html>
